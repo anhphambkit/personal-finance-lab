@@ -1,0 +1,363 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+:root {
+  color-scheme: light;
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ui-primary: #4658c9;
+  --ui-radius: 0.5rem;
+  --ui-header-height: 4.5rem;
+  --bank-canvas: #f4f6fb;
+  --ui-text-highlighted: #0f172a;
+  --ui-border: #e2e8f0;
+  --ui-text-muted: var(--color-slate-600);
+  font-family: var(--font-sans);
+}
+
+.bank-brand:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 6px;
+  border-radius: 0.25rem;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.bank-summary {
+  border-radius: 1.5rem;
+  border-color: #dce3f5;
+  background: radial-gradient(ellipse at 100% 0%, #e0e7ff 0%, transparent 65%), #eef2fc;
+  box-shadow: 0 4px 24px -16px #24377530;
+}
+
+.bank-account-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #ffffff24;
+  border-radius: 1.5rem;
+  box-shadow:
+    0 12px 24px -12px #182b6a55,
+    inset 0 1px 0 #ffffff1c;
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.bank-account-card--checking {
+  background:
+    radial-gradient(ellipse at 100% 0%, #3d5088 0%, transparent 70%),
+    linear-gradient(135deg, #142442, #23365e);
+}
+
+.bank-account-card--savings {
+  background:
+    radial-gradient(ellipse at 100% 0%, #7387e3 0%, transparent 65%),
+    linear-gradient(135deg, #3348aa, #485dc0);
+}
+
+.bank-account-card--frozen {
+  background:
+    radial-gradient(ellipse at 100% 0%, #667a91 0%, transparent 65%),
+    linear-gradient(135deg, #334155, #45576d);
+}
+
+.bank-card-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bank-card-art span {
+  position: absolute;
+  top: 3.5rem;
+  right: -8rem;
+  width: 20rem;
+  height: 20rem;
+  border: 1px solid #ffffff16;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #ffffff07, transparent 70%);
+  transition: transform 600ms ease;
+}
+
+.bank-card-art span:nth-child(2) {
+  top: 5.5rem;
+  right: -6rem;
+}
+.bank-card-art span:nth-child(3) {
+  top: 7.5rem;
+  right: -4rem;
+}
+
+.bank-card-footer {
+  border-top: 1px solid #ffffff1f;
+  background: #ffffff09;
+}
+
+.bank-card-transfer {
+  border-radius: 0.75rem;
+  color: #fff;
+  background: #ffffff12;
+  box-shadow: inset 0 0 0 1px #ffffff40;
+  transition:
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.bank-card-transfer:hover:not(:disabled) {
+  color: #fff;
+  background: #ffffff26;
+  box-shadow: inset 0 0 0 1px #ffffff70;
+}
+
+.bank-card-transfer:disabled {
+  color: #e2e8f0;
+  opacity: 0.65;
+  background: #ffffff05;
+}
+
+.bank-card-transfer:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+.bank-status {
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px #00000005;
+}
+.bank-status--success {
+  color: #066143;
+  background: #d1fae5;
+}
+.bank-status--warning {
+  color: #854d0e;
+  background: #fef3c7;
+}
+.bank-status--error {
+  color: #a51d3b;
+  background: #ffe4e6;
+}
+
+.bank-surface {
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 24px -16px #24377530;
+}
+
+.bank-transfer-shell {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--ui-primary) 11%, transparent) 0,
+      transparent 19rem
+    ),
+    var(--ui-bg);
+  box-shadow:
+    0 18px 50px -32px #24377555,
+    0 1px 2px #0f172a0a;
+}
+
+.bank-transaction-icon {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+}
+
+.bank-transaction-icon--credit {
+  color: #047857;
+  background: #e0f5ed;
+}
+.bank-transaction-icon--debit {
+  color: #4f5bb6;
+  background: #eef0fc;
+}
+.bank-transaction-table tbody tr,
+.bank-transaction-list > li {
+  transition: background 180ms ease;
+}
+.bank-transaction-table tbody tr:hover,
+.bank-transaction-list > li:hover {
+  background: #f6f8ff;
+}
+
+.bank-brand-mark {
+  background: linear-gradient(145deg, #5a70dd, #3547ad);
+  box-shadow: 0 4px 10px #4658c930;
+}
+
+.bank-nav-link {
+  transition:
+    color 180ms ease,
+    background 180ms ease;
+}
+.bank-nav-link[aria-current='page'] {
+  color: #3d4fb8;
+  background: #edf0fd;
+}
+.bank-nav-link[aria-current='page']::before {
+  background: transparent;
+}
+
+.bank-button {
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.bank-button-arrow {
+  transition: transform 180ms ease;
+}
+.bank-button:active:not(:disabled):not([aria-disabled='true']) {
+  transform: translateY(1px);
+}
+
+.bank-card-skeleton {
+  background: #eaf0fb;
+}
+.bank-skeleton {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  background: #dce4f1;
+  animation: none;
+}
+.bank-skeleton::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, #ffffff85, transparent);
+  animation: bank-shimmer 1.8s ease-in-out infinite;
+}
+.bank-data-content {
+  animation: bank-reveal 280ms ease-out;
+}
+.bank-refresh-indicator {
+  position: absolute;
+  top: -0.875rem;
+  right: 1rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d8def9;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3e4faf;
+  box-shadow: 0 3px 10px #24377512;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+@keyframes bank-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes bank-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bank-account-card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 20px 32px -16px #182b6a80,
+      inset 0 1px 0 #ffffff30;
+  }
+  .bank-account-card:hover .bank-card-art span {
+    transform: translate(-8px, -6px);
+  }
+  .bank-button:hover:not(:disabled):not([aria-disabled='true']) .bank-button-arrow {
+    transform: translate(2px, -1px);
+  }
+}
+
+.bank-account-card:focus-within {
+  box-shadow:
+    0 0 0 3px #c7d2fe,
+    0 14px 24px -12px #182b6a55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bank-account-card:hover,
+  .bank-account-card:hover .bank-card-art span,
+  .bank-button:active:not(:disabled),
+  .bank-button:hover:not(:disabled) .bank-button-arrow {
+    transform: none;
+  }
+  .bank-skeleton::after {
+    display: none;
+  }
+}
+
+.dark {
+  color-scheme: dark;
+  --ui-primary: #a5b4fc;
+  --bank-canvas: #0b1220;
+  --ui-bg: #111c30;
+  --ui-bg-elevated: #1b2940;
+  --ui-text-highlighted: #f1f5f9;
+  --ui-text-muted: #aabbd0;
+  --ui-border: #334155;
+}
+.dark .bank-summary {
+  border-color: #384768;
+  background: radial-gradient(ellipse at 100% 0%, #303f70 0%, transparent 65%), #19253e;
+}
+.dark .bank-nav-link[aria-current='page'] {
+  color: #c7d2fe;
+  background: #293653;
+}
+.dark .bank-transaction-table tbody tr:hover,
+.dark .bank-transaction-list > li:hover {
+  background: #1b2940;
+}
+.dark .bank-transaction-icon--credit {
+  color: #6ee7b7;
+  background: #143b35;
+}
+.dark .bank-transaction-icon--debit {
+  color: #c7d2fe;
+  background: #2b3559;
+}
+.dark .bank-card-skeleton {
+  background: #19253e;
+}
+.dark .bank-skeleton {
+  background: #334155;
+}
+.dark .bank-refresh-indicator {
+  background: #293653;
+  color: #c7d2fe;
+  border-color: #46567b;
+}

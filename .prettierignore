@@ -1,0 +1,12 @@
+node_modules/
+.tools/
+dist/
+coverage/
+package-lock.json
+public/mockServiceWorker.js
+PERSONAL_FINANCE_LAB_MASTER_HANDOFF.md
+
+.nuxt/
+.output/
+
+storybook-static/

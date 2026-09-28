@@ -1,0 +1,74 @@
+{
+  "name": "personal-finance-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.14.0 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.9.0",
+  "scripts": {
+    "dev": "npm run dev:bff",
+    "dev:bff": "NUXT_PUBLIC_ENABLE_MOCKS=false NUXT_PUBLIC_ENABLE_BFF=true nuxt dev --host 127.0.0.1",
+    "dev:mock": "NUXT_PUBLIC_ENABLE_MOCKS=true NUXT_PUBLIC_ENABLE_BFF=false nuxt dev --host 127.0.0.1",
+    "build": "npm run typecheck && nuxt build",
+    "preview": "nuxt preview --host 127.0.0.1",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "check:links": "node scripts/check-markdown-links.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "start": "node .output/server/index.mjs",
+    "postinstall": "nuxt prepare",
+    "test:bff": "vitest run src/tests/data/bffAuth.test.ts src/tests/data/bffHttpBackend.test.ts src/tests/data/serverRecoveryStorage.test.ts",
+    "test:bff:service": "node scripts/verify-bff-service.mjs",
+    "test:e2e": "npm run build && playwright test",
+    "test:e2e:built": "playwright test",
+    "test:all": "npm run test -- --run && npm run build && npm run test:e2e:built",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "test:visual": "playwright test --config playwright.visual.config.mjs",
+    "test:visual:update": "playwright test --config playwright.visual.config.mjs --update-snapshots",
+    "test:storybook": "playwright test --config playwright.storybook.config.mjs"
+  },
+  "dependencies": {
+    "@nuxt/ui": "4.11.0",
+    "@tanstack/vue-query": "5.102.8",
+    "h3": "1.15.11",
+    "msw": "2.15.0",
+    "nuxt": "4.5.2",
+    "tailwindcss": "4.3.3",
+    "vue": "3.5.42",
+    "vue-router": "5.2.0",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@iconify-json/lucide": "1.2.129",
+    "@playwright/test": "1.63.0",
+    "@storybook/vue3-vite": "10.6.0",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "6.0.8",
+    "@vue/eslint-config-typescript": "14.9.0",
+    "@vue/test-utils": "2.4.11",
+    "eslint": "10.10.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-vue": "10.10.0",
+    "fake-indexeddb": "6.2.5",
+    "jsdom": "26.1.0",
+    "prettier": "3.9.6",
+    "storybook": "10.6.0",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "vitest": "5.0.0",
+    "vue-tsc": "3.3.11"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}

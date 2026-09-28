@@ -1,0 +1,34 @@
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+storybook-static/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.npmrc.local
+.tools/
+*.log
+.DS_Store
+
+# Editor-local files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Local implementation prompts, plans and progress notes
+/PERSONAL_FINANCE_LAB_MASTER_HANDOFF.md
+/docs/preflight.md
+/docs/implementation-checklist.md
+/docs/codebase-review.md
+/docs/day-1-review.md
+/docs/step-*.md
+/.local-notes/
+
+.nuxt/
+.output/
