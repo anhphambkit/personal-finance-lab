@@ -1,5 +1,5 @@
 {
-  "name": "personal-finance-lab",
+  "name": "raksul-bank-sample",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,7 @@
   },
   "packageManager": "npm@11.9.0",
   "scripts": {
-    "dev": "npm run dev:bff",
-    "dev:bff": "NUXT_PUBLIC_ENABLE_MOCKS=false NUXT_PUBLIC_ENABLE_BFF=true nuxt dev --host 127.0.0.1",
-    "dev:mock": "NUXT_PUBLIC_ENABLE_MOCKS=true NUXT_PUBLIC_ENABLE_BFF=false nuxt dev --host 127.0.0.1",
+    "dev": "nuxt dev --host 127.0.0.1",
     "build": "npm run typecheck && nuxt build",
     "preview": "nuxt preview --host 127.0.0.1",
     "typecheck": "nuxt typecheck",
@@ -23,8 +21,6 @@
     "test": "vitest",
     "start": "node .output/server/index.mjs",
     "postinstall": "nuxt prepare",
-    "test:bff": "vitest run src/tests/data/bffAuth.test.ts src/tests/data/bffHttpBackend.test.ts src/tests/data/serverRecoveryStorage.test.ts",
-    "test:bff:service": "node scripts/verify-bff-service.mjs",
     "test:e2e": "npm run build && playwright test",
     "test:e2e:built": "playwright test",
     "test:all": "npm run test -- --run && npm run build && npm run test:e2e:built",

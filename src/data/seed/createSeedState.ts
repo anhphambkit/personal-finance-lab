@@ -78,7 +78,7 @@ export function createSeedState(): BankingState {
         id: 'beneficiary-alex',
         customerId: customer.id,
         displayName: 'Alex Rivera',
-        bankName: 'Demo Bank',
+        bankName: 'Raksul-bank',
         accountNumber: '200000001842',
         currency: 'USD',
         internalAccountId: 'account-internal-alex',
@@ -87,7 +87,7 @@ export function createSeedState(): BankingState {
         id: 'beneficiary-jamie',
         customerId: customer.id,
         displayName: 'Jamie Park',
-        bankName: 'Demo Bank',
+        bankName: 'Raksul-bank',
         accountNumber: '200000006027',
         currency: 'USD',
         internalAccountId: 'account-internal-jamie',
@@ -145,11 +145,11 @@ export function createSeedState(): BankingState {
     [12, 'account-checking', 'DEBIT', 'CARD', 2_185, 'Pharmacy purchase', 'Well Pharmacy'],
     [14, 'account-checking', 'DEBIT', 'CARD', 3_299, 'Books and stationery', 'Page & Paper'],
     [16, 'account-checking', 'CREDIT', 'CARD', 1_499, 'Returned item refund', 'Page & Paper'],
-    [18, 'account-checking', 'DEBIT', 'CASH', 10_000, 'ATM cash withdrawal', 'Demo Bank ATM'],
-    [18, 'account-checking', 'DEBIT', 'FEE', 250, 'Out-of-network ATM fee', 'Demo Bank'],
+    [18, 'account-checking', 'DEBIT', 'CASH', 10_000, 'ATM cash withdrawal', 'Raksul-bank ATM'],
+    [18, 'account-checking', 'DEBIT', 'FEE', 250, 'Out-of-network ATM fee', 'Raksul-bank'],
     [20, 'account-checking', 'DEBIT', 'CARD', 6_420, 'Dinner with friends', 'Juniper Kitchen'],
-    [28, 'account-savings', 'CREDIT', 'INTEREST', 1_850, 'Monthly savings interest', 'Demo Bank'],
-    [28, 'account-frozen', 'DEBIT', 'FEE', 100, 'Reserve account service fee', 'Demo Bank'],
+    [28, 'account-savings', 'CREDIT', 'INTEREST', 1_850, 'Monthly savings interest', 'Raksul-bank'],
+    [28, 'account-frozen', 'DEBIT', 'FEE', 100, 'Reserve account service fee', 'Raksul-bank'],
   ]
   for (let month = 3; month <= 8; month++) {
     const monthText = String(month).padStart(2, '0')

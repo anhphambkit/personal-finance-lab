@@ -2,13 +2,13 @@
 
 - **Status:** Accepted
 - **Last clarified:** 2026-09-08
-- **Scope:** Browser-local demo storage and the handoff to a compatible backend
+- **Scope:** Browser-local demo HTTP and persistence
 
 ## Context
 
 The work sample needs realistic accounts, filterable activity and balances that survive refresh. Reviewers should be able to run it with Nuxt alone, without installing a banking backend or database.
 
-A transfer changes several related records. Those changes must all commit or all fail, including when two tabs submit transfers at the same time. The application also needs a backend mode that preserves the frontend API contract.
+A transfer changes several related records. Those changes must all commit or all fail, including when two tabs submit transfers at the same time.
 
 ## Decision drivers
 
@@ -44,13 +44,13 @@ MSW intercepts browser HTTP requests. Handlers parse requests and map results or
 
 ### 2. Store one validated, versioned banking snapshot
 
-| Setting                 | Value                  |
-| ----------------------- | ---------------------- |
-| Database                | `personal-finance-lab` |
-| Database version        | `1`                    |
-| Object store            | `banking-state`        |
-| Snapshot key            | `current`              |
-| Snapshot schema version | `1`                    |
+| Setting                 | Value           |
+| ----------------------- | --------------- |
+| Database                | `raksul-bank`   |
+| Database version        | `1`             |
+| Object store            | `banking-state` |
+| Snapshot key            | `current`       |
+| Snapshot schema version | `1`             |
 
 The snapshot contains the customer, accounts, transactions, transfers and beneficiaries. A runtime Zod schema checks field values and relationships, including unique IDs, valid references and the linked activity required for each transfer. This detects malformed or inconsistent data; it does not authenticate browser data or prove it has not been edited.
 
@@ -88,11 +88,9 @@ After an update or reset commits, publish a change token through `localStorage`.
 
 Reset also attempts to clear demo transfer recovery records and update a reset-generation marker. Notifications and recovery cleanup happen after the IndexedDB commit. If `localStorage` fails, the committed banking operation still succeeds; notification and cleanup are best-effort.
 
-### 6. Use Nitro for backend mode
+### 6. Fail closed outside browser MSW
 
-Demo queries start after browser hydration and MSW startup. If the worker fails to start, requests reach Nitro's explicit demo-unavailable response.
-
-Backend mode disables MSW. Nitro forwards same-origin `/api/*` requests to the private configured upstream while preserving incoming request context. Demo maintenance endpoints are not forwarded. Backend SSR uses the request-local caches described in ADR 001, with `private, no-store` responses.
+Demo queries start after browser hydration and MSW startup. Nitro never proxies banking requests: if a request is made during SSR or MSW does not intercept it, the catch-all `/api/*` route returns an explicit `DEMO_BROWSER_ONLY` 503 response with `private, no-store` caching.
 
 ## Why
 
@@ -102,10 +100,10 @@ The HTTP boundary exercises request and error handling while keeping setup small
 
 ### Benefits
 
-- Reviewers need no server beyond Nuxt in demo mode.
+- Reviewers need no server beyond Nuxt.
 - Banking changes survive reloads and commit atomically within IndexedDB.
 - Competing tabs do not overwrite changes based on independently loaded snapshots.
-- HTTP behavior, native persistence and backend SSR can be verified separately.
+- HTTP behavior and native persistence can be verified in isolation and in a real browser.
 
 ### Trade-offs and limits
 
@@ -114,13 +112,14 @@ The HTTP boundary exercises request and error handling while keeping setup small
 - Cross-tab notifications can fail independently of a successful commit.
 - Cross-device persistence is explicitly deferred.
 - Mock ownership filtering is not server-side authorization. A real integration must supply authentication, authorization, runtime contract validation and transactional persistence.
+- Restoring the `raksul-bank` namespace intentionally starts a fresh fictional demo for browsers that previously stored `personal-finance-lab` or `personal-banking-lab` data. Those older demo namespaces and recovery records are not migrated.
 
 ## Implementation and verification
 
 - [HTTP handlers](../../src/data/mock/handlers/banking.ts) and [seed factory](../../src/data/seed/createSeedState.ts) define the demo entry point and initial data.
 - [IndexedDB repository](../../src/data/repositories/indexedDbBankingRepository.ts) implements transactions and recovery; [snapshot schema](../../src/data/repositories/bankingStateSchema.ts) checks stored data.
 - [Change notifications](../../src/data/sync/bankingChanges.ts) and [Vue Query plugin](../../src/plugins/02.vue-query.ts) refresh other tabs.
-- [Nitro API route](../../server/api/[...path].ts) implements backend forwarding.
-- [Repository tests](../../src/tests/data/repository.test.ts) cover validation, recovery, concurrent connections and aborted writes. [Browser tests](../../scripts/e2e/demo.spec.mjs) exercise native persistence; [BFF tests](../../src/tests/data/bffAuth.test.ts) verify the server boundary.
+- [Nitro API route](../../server/api/[...path].ts) implements the fail-closed server boundary.
+- [Repository tests](../../src/tests/data/repository.test.ts) cover validation, recovery, concurrent connections and aborted writes. [Browser tests](../../scripts/e2e/demo.spec.mjs) exercise native persistence.
 
 Related decisions: [frontend architecture](001-feature-oriented-vue-architecture.md), [money and transfer consistency](003-money-and-transfer-consistency.md).

@@ -1,6 +1,6 @@
 # Bank development workflow
 
-Workflow này điều phối công việc trong `personal-finance-lab`, dùng rules đang được ghi trong repo. CI hiện có nằm ở `.github/workflows/ci.yml`; workflow agent bổ sung cách triển khai và review, không thay thế CI.
+Workflow này điều phối công việc trong `raksul-bank-sample`, dùng rules đang được ghi trong repo. CI hiện có nằm ở `.github/workflows/ci.yml`; workflow agent bổ sung cách triển khai và review, không thay thế CI.
 
 ## Gọi command
 

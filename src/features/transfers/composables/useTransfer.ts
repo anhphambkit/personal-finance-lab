@@ -5,7 +5,7 @@ import { bankingQueryKeys } from '@/data/api/bankingQueryKeys'
 import type { TransferRequest } from '@/contracts/transfers'
 
 export function useTransfer() {
-  const { api, session } = useBankingContext()
+  const { api } = useBankingContext()
   const client = useQueryClient()
   return useMutation({
     mutationFn: (request: TransferRequest) => api.executeTransfer(request),
@@ -18,7 +18,7 @@ export function useTransfer() {
       }
       // A rejected confirmation may mean another tab changed the available funds.
       if (error instanceof ApiError && [400, 422].includes(error.status)) {
-        await client.invalidateQueries({ queryKey: bankingQueryKeys.accounts(session.scope.value) })
+        await client.invalidateQueries({ queryKey: bankingQueryKeys.accounts })
       }
     },
     onSuccess: async () => {

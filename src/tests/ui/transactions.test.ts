@@ -61,65 +61,6 @@ const ready = (wrapper: VueWrapper) =>
   vi.waitFor(() => expect(wrapper.text()).toContain('100 transactions'))
 
 describe('Transaction explorer', () => {
-  it('does not apply on Enter or implicit form submission', async () => {
-    const { wrapper, router } = await page()
-    await ready(wrapper)
-    const count = requests.length
-    await wrapper.get('#transaction-search').setValue('salary')
-    await wrapper.get('#transaction-search').trigger('keydown', { key: 'Enter' })
-    await wrapper.get('form').trigger('submit')
-    expect(router.currentRoute.value.query).toEqual({})
-    expect(requests).toHaveLength(count)
-    await button(wrapper, 'Apply filters').trigger('click')
-    await vi.waitFor(() => expect(router.currentRoute.value.query.query).toBe('salary'))
-  })
-
-  it('applies immediately when search is emptied, retaining selected filters and resetting page', async () => {
-    const { wrapper, router } = await page(
-      '/transactions?query=salary&direction=CREDIT&pageSize=2&page=2',
-    )
-    await vi.waitFor(() => expect(wrapper.text()).toContain('6 transactions matching your filters'))
-    await wrapper.get('#transaction-search').setValue('salar')
-    expect(router.currentRoute.value.query.query).toBe('salary')
-    await wrapper.get('#transaction-search').setValue('')
-    await vi.waitFor(() =>
-      expect(router.currentRoute.value.query).toEqual({ direction: 'CREDIT', pageSize: '2' }),
-    )
-    await vi.waitFor(() => expect(requests.at(-1)!.searchParams.has('query')).toBe(false))
-    expect(requests.at(-1)!.searchParams.get('direction')).toBe('CREDIT')
-    expect(requests.at(-1)!.searchParams.get('page')).toBe('1')
-  })
-
-  it('clears search while a refresh is still fetching', async () => {
-    const { wrapper, router } = await page('/transactions?query=salary')
-    await vi.waitFor(() => expect(wrapper.text()).toContain('6 transactions matching your filters'))
-    server.use(
-      http.get('*/api/transactions', async () => {
-        await delay(120)
-        return HttpResponse.json({
-          data: [],
-          pagination: { page: 1, pageSize: 20, totalItems: 0, totalPages: 0 },
-        })
-      }),
-    )
-    await button(wrapper, 'Refresh').trigger('click')
-    expect(button(wrapper, 'Apply filters').attributes()).toHaveProperty('disabled')
-    await wrapper.get('#transaction-search').setValue('')
-    await vi.waitFor(() => expect(router.currentRoute.value.query).toEqual({}))
-    await vi.waitFor(() => expect(requests.at(-1)!.searchParams.has('query')).toBe(false))
-  })
-
-  it('does not apply other invalid draft edits when search is cleared', async () => {
-    const { wrapper, router } = await page('/transactions?query=salary&direction=CREDIT')
-    await vi.waitFor(() => expect(wrapper.text()).toContain('6 transactions matching your filters'))
-    await wrapper.get('#transaction-date-from').setValue('2026-06-01')
-    await wrapper.get('#transaction-date-to').setValue('2026-04-01')
-    await wrapper.get('#transaction-search').setValue('')
-    await vi.waitFor(() => expect(router.currentRoute.value.query).toEqual({ direction: 'CREDIT' }))
-    expect(router.currentRoute.value.query).not.toHaveProperty('dateFrom')
-    expect(router.currentRoute.value.query).not.toHaveProperty('dateTo')
-  })
-
   it('loads real API results, shows signed amounts and limits each page', async () => {
     const { wrapper } = await page()
     expect(wrapper.text()).toContain('Loading transactions')
@@ -144,7 +85,7 @@ describe('Transaction explorer', () => {
     select(wrapper, 'transaction-status', 'COMPLETED')
     await wrapper.get('#transaction-date-from').setValue('2026-04-01')
     await wrapper.get('#transaction-date-to').setValue('2026-05-31')
-    await button(wrapper, 'Apply filters').trigger('click')
+    await wrapper.get('form').trigger('submit')
     await vi.waitFor(() => expect(wrapper.text()).toContain('2 transactions matching your filters'))
     const filters = {
       query: 'Green basket',
@@ -198,7 +139,7 @@ describe('Transaction explorer', () => {
     await button(wrapper, 'Next').trigger('click')
     await vi.waitFor(() => expect(wrapper.text()).toContain('Page 2 of 10'))
     await wrapper.get('#transaction-search').setValue('salary')
-    await button(wrapper, 'Apply filters').trigger('click')
+    await wrapper.get('form').trigger('submit')
     await vi.waitFor(() => expect(wrapper.text()).toContain('6 transactions matching your filters'))
     expect(router.currentRoute.value.query).toEqual({ pageSize: '10', query: 'salary' })
     router.back()
@@ -261,8 +202,7 @@ describe('Transaction explorer', () => {
     const count = requests.length
     await wrapper.get('#transaction-date-from').setValue('2026-06-01')
     await wrapper.get('#transaction-date-to').setValue('2026-04-01')
-    await wrapper.get('#transaction-date-to').trigger('focusout')
-    await button(wrapper, 'Apply filters').trigger('click')
+    await wrapper.get('form').trigger('submit')
     expect(wrapper.get('[role="alert"]').text()).toContain(
       'Start date must be on or before end date',
     )

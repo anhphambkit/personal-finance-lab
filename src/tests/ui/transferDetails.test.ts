@@ -233,7 +233,7 @@ describe('transfer details', () => {
       .findAll('button')
       .find((item) => item.text() === 'Check account')!
       .trigger('click')
-    await vi.waitFor(() => expect(wrapper.text()).toContain('Verified Demo Bank account'))
+    await vi.waitFor(() => expect(wrapper.text()).toContain('Verified Raksul-bank account'))
     expect(wrapper.text()).toContain('Alex Rivera')
     expect(wrapper.text()).not.toContain('Account holder name')
   })
@@ -279,7 +279,7 @@ describe('transfer details', () => {
       kind: 'BENEFICIARY',
       beneficiaryId: 'beneficiary-alex',
     })
-    expect(draft.recipient).toMatchObject({ name: 'Alex Rivera', bankName: 'Demo Bank' })
+    expect(draft.recipient).toMatchObject({ name: 'Alex Rivera', bankName: 'Raksul-bank' })
   })
   it('keeps a new external recipient inside the review request without saving it', () => {
     const draft = prepareTransfer(

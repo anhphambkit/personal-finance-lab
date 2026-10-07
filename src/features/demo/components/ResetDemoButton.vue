@@ -5,7 +5,7 @@ import UButton from '@nuxt/ui/components/Button.vue'
 import UModal from '@nuxt/ui/components/Modal.vue'
 import { useBankingContext } from '@/data/api/bankingContext'
 import { bankingQueryKeys } from '@/data/api/bankingQueryKeys'
-const { api, ready, mocksEnabled } = useBankingContext()
+const { api, ready } = useBankingContext()
 const open = ref(false)
 const restored = ref(false)
 const client = useQueryClient()
@@ -29,7 +29,7 @@ const { mutate, isPending, isError, reset } = useMutation({
 })
 let triggerElement: HTMLElement | null = null
 function requestOpen(event?: Event) {
-  if (!mocksEnabled || !ready.value || isPending.value) return
+  if (!ready.value || isPending.value) return
   triggerElement =
     event?.currentTarget instanceof HTMLElement
       ? event.currentTarget
@@ -47,14 +47,14 @@ function restoreFocus(event: Event) {
   }
 }
 function confirm() {
-  if (mocksEnabled && ready.value && open.value && !isPending.value) mutate()
+  if (ready.value && open.value && !isPending.value) mutate()
 }
 function cancel() {
   if (!isPending.value) open.value = false
 }
 </script>
 <template>
-  <div v-if="mocksEnabled" class="flex flex-col items-end gap-2">
+  <div class="flex flex-col items-end gap-2">
     <slot name="trigger" :open="requestOpen" :disabled="!ready || isPending">
       <UButton
         color="neutral"

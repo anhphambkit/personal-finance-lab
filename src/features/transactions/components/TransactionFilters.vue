@@ -41,15 +41,6 @@ defineSlots<{
 }>()
 function update(patch: Partial<TransactionFiltersValue>) {
   draft.value = { ...draft.value, ...patch }
-  if (
-    'query' in patch &&
-    props.filters.query.trim() &&
-    patch.query !== undefined &&
-    !patch.query.trim()
-  ) {
-    error.value = ''
-    emit('apply', { ...props.filters, query: '' })
-  }
 }
 const fieldScope = computed(() => ({ draft: draft.value, update, busy: props.busy }))
 const filtersValid = computed(() => {
@@ -168,14 +159,13 @@ function clear() {
           </label>
           <UInput
             :id="`${idPrefix}-search`"
-            :model-value="draft.query"
+            v-model="draft.query"
             type="search"
             icon="i-lucide-search"
             placeholder="Search description, name or ID"
             :maxlength="200"
             size="md"
             class="w-full"
-            @update:model-value="update({ query: String($event ?? '') })"
           />
         </slot>
       </div>

@@ -46,11 +46,6 @@ function invalidResponse(): ApiError {
   )
 }
 
-function spendingResponseError(error: unknown): never {
-  if (error instanceof ApiError && error.code === 'INVALID_RESPONSE') throw invalidResponse()
-  throw error
-}
-
 /** Reads the existing customer-scoped API; never publishes incomplete aggregates. */
 export async function loadSpendingInsights(
   api: BankingApi,
@@ -59,9 +54,7 @@ export async function loadSpendingInsights(
 ): Promise<SpendingInsight> {
   const window = spendingWindow(query.month)
   signal?.throwIfAborted()
-  const accountsResult = accountsSchema.safeParse(
-    await api.accounts(signal).catch(spendingResponseError),
-  )
+  const accountsResult = accountsSchema.safeParse(await api.accounts(signal))
   signal?.throwIfAborted()
   if (!accountsResult.success) throw invalidResponse()
   const ownedIds = new Set(accountsResult.data.map((account) => account.id))
@@ -76,19 +69,17 @@ export async function loadSpendingInsights(
   for (let page = 1; page <= maximumPages; page++) {
     signal?.throwIfAborted()
     const result = responseSchema.safeParse(
-      await api
-        .transactions(
-          {
-            ...window,
-            ...(query.accountId === undefined ? {} : { accountId: query.accountId }),
-            direction: 'DEBIT',
-            status: 'COMPLETED',
-            page,
-            pageSize,
-          },
-          signal,
-        )
-        .catch(spendingResponseError),
+      await api.transactions(
+        {
+          ...window,
+          ...(query.accountId === undefined ? {} : { accountId: query.accountId }),
+          direction: 'DEBIT',
+          status: 'COMPLETED',
+          page,
+          pageSize,
+        },
+        signal,
+      ),
     )
     signal?.throwIfAborted()
     if (!result.success) throw invalidResponse()

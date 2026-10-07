@@ -13,7 +13,7 @@ Read the applicable sources before editing:
 - [Architecture](docs/architecture.md), [ADRs](docs/adr/001-feature-oriented-vue-architecture.md), and `eslint.config.js`: dependency boundaries.
 - [Component customization](docs/component-customization.md): props, slots, callbacks and defaults.
 - [Testing](docs/testing.md) and [enhancements](docs/enhancements.md): test boundaries and visual baseline policy.
-- [Backend handoff](docs/nuxt-migration.md): demo/backend split and SSR integration.
+- [Future backend handoff](docs/nuxt-migration.md): current mock-only boundary and requirements for any later real integration.
 - `package.json`, `.nvmrc`, `.storybook/main.ts`: actual commands/runtime/story discovery.
 
 These are the recorded rules. Do not claim access to preferences from earlier conversations that are absent here. If documentation and code diverge, report the conflict and resolve within task scope, preserving explicit user intent.

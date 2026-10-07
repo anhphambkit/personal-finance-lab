@@ -1,4 +1,4 @@
-/** Fictional demo account; never used as a default in backend mode. */
+/** Fictional account used only to make the browser demo easy to explore. */
 export const DEMO_NEW_SAME_BANK_NUMBER = '200000008319'
 
 /** Fictional unsaved external recipient used to demonstrate saving a new contact. */

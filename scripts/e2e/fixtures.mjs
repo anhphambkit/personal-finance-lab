@@ -7,10 +7,8 @@ export const test = base.extend({
       if (browserName !== 'chromium') throw new Error('This suite currently targets Chromium.')
       const environment = await createTestEnvironment()
       try {
-        const demo = await environment.start({
-          NUXT_PUBLIC_ENABLE_MOCKS: 'true',
-          NUXT_PUBLIC_ENABLE_BFF: 'false',
-        })
+        // No environment override: the shipped application must work as a browser-only demo.
+        const demo = await environment.start()
         await use({ ...environment, demo: demo.url })
       } finally {
         await environment.close()

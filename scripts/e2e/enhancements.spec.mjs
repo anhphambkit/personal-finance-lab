@@ -98,7 +98,7 @@ for (const width of [1440, 390]) {
     await page.getByRole('radio', { name: 'Someone else' }).click()
     await expect(page.getByRole('textbox', { name: /^Account number/ })).toHaveValue('200000008319')
     await page.getByRole('button', { name: 'Check account' }).click()
-    await expect(page.getByText('Verified Demo Bank account')).toBeVisible()
+    await expect(page.getByText('Verified Raksul-bank account')).toBeVisible()
     await page.getByRole('radio', { name: 'Other bank' }).click()
     await expect(page.getByRole('textbox', { name: /^Account number/ })).toHaveValue('987654327451')
     await expect(page.getByRole('textbox', { name: /^Account holder name/ })).toHaveValue(
@@ -111,7 +111,7 @@ for (const width of [1440, 390]) {
     const search = page.getByPlaceholder('Search name, bank or last 4 digits')
     await search.fill('no-such-contact')
     await expect(page.getByText('No saved recipients match your search.')).toBeVisible()
-    await search.fill('Demo Bank')
+    await search.fill('Raksul-bank')
     await expect(page.getByRole('option')).toHaveCount(0)
     await search.fill('Harbor Bank')
     await expect(page.getByRole('option')).toHaveCount(2)
@@ -122,7 +122,7 @@ for (const width of [1440, 390]) {
       page.getByRole('button', { name: 'Saved recipient', exact: true }),
     ).not.toContainText('Maple Apartments')
     await page.getByRole('button', { name: 'Saved recipient', exact: true }).click()
-    await search.fill('Demo Bank')
+    await search.fill('Raksul-bank')
     await expect(page.getByRole('option')).toHaveCount(2)
     await search.fill('1842')
     await expect(page.getByRole('option')).toHaveCount(1)
@@ -165,12 +165,6 @@ test('restores draft and replays a committed request after closing the page with
 }) => {
   await page.goto(`${environment.demo}/transfer`)
   await fillTransfer(page)
-  const navigation = page.getByRole('navigation', { name: 'Main navigation' })
-  await navigation.getByRole('link', { name: 'Accounts', exact: true }).click()
-  await expect(page).toHaveTitle('Accounts · Personal Finance Lab')
-  await navigation.getByRole('link', { name: 'Transfer', exact: true }).click()
-  await expect(page.getByPlaceholder('0.00')).toHaveValue('10.50')
-  await expect(page.getByLabel('Reference')).toHaveValue('Recovered browser transfer')
   await page.reload()
   await expect(page.getByPlaceholder('0.00')).toHaveValue('10.50')
   await expect(page.getByLabel('Reference')).toHaveValue('Recovered browser transfer')
@@ -179,12 +173,11 @@ test('restores draft and replays a committed request after closing the page with
   // Simulate commit followed by losing the UI response/closing before receipt cleanup.
   const key = await page.evaluate(async () => {
     const key = Object.keys(globalThis.localStorage).find((k) =>
-      k.startsWith('personal-finance-lab-transfer-v1:'),
+      k.startsWith('raksul-transfer-v1:'),
     )
-    const stored = JSON.parse(globalThis.localStorage.getItem(key))
-    const record = stored.record
+    const record = JSON.parse(globalThis.localStorage.getItem(key))
     record.submitted = true
-    globalThis.localStorage.setItem(key, JSON.stringify(stored))
+    globalThis.localStorage.setItem(key, JSON.stringify(record))
     const response = await fetch('/api/transfers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -243,7 +236,7 @@ for (const save of [false, true]) {
     await page.getByRole('radio', { name: 'Someone else' }).click()
     await expect(page.getByRole('textbox', { name: /^Account number/ })).toHaveValue('200000008319')
     await page.getByRole('button', { name: 'Check account' }).click()
-    await expect(page.getByText('Verified Demo Bank account')).toBeVisible()
+    await expect(page.getByText('Verified Raksul-bank account')).toBeVisible()
     await expect(page.getByText('Jordan Lee', { exact: true })).toBeVisible()
     const checkbox = page.getByRole('checkbox', { name: 'Save recipient for next time' })
     await expect(checkbox).not.toBeChecked()

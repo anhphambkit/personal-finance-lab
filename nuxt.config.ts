@@ -6,23 +6,18 @@ export default defineNuxtConfig({
   ssr: true,
   modules: ['@nuxt/ui'],
   css: ['~/shared/styles/main.css'],
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   ui: { fonts: false },
   colorMode: { preference: 'light', fallback: 'light', classSuffix: '' },
   icon: { clientBundle: { scan: true } },
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
-      title: 'Personal Finance Lab',
+      title: 'Raksul-bank',
       meta: [
         { name: 'description', content: 'A personal banking dashboard with fictional demo data.' },
       ],
     },
-  },
-  runtimeConfig: {
-    bffApiBaseUrl: '',
-    authOrigin: '',
-    public: { enableMocks: 'true', enableBff: 'false' },
   },
   routeRules: { '/**': { headers: { 'cache-control': 'private, no-store' } } },
   typescript: {

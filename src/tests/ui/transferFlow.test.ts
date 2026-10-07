@@ -63,7 +63,7 @@ async function details(wrapper: VueWrapper, beneficiary?: string, amount = '10.5
     if (recipient.internalAccountId) {
       await wrapper.get('input[inputmode="numeric"]').setValue(recipient.accountNumber)
       await button(wrapper, 'Check account').trigger('click')
-      await vi.waitFor(() => expect(wrapper.text()).toContain('Verified Demo Bank account'))
+      await vi.waitFor(() => expect(wrapper.text()).toContain('Verified Raksul-bank account'))
     } else {
       wrapper
         .findAllComponents({ name: 'RadioGroup' })[1]!
@@ -166,20 +166,6 @@ describe('transfer details → review → confirmation → receipt', () => {
       expect(await repository.load()).toEqual(createSeedState())
     },
   )
-  it('restores an unfinished draft when returning with warm account caches', async () => {
-    const { wrapper, router } = await page()
-    await wrapper.get('input[inputmode="decimal"]').setValue('42.75')
-    await wrapper.get('input[maxlength="140"]').setValue('Unfinished payment')
-    await router.push('/accounts')
-    expect(router.currentRoute.value.path).toBe('/accounts')
-    await router.push('/transfer')
-    await vi.waitFor(() => expect(wrapper.text()).toContain('Draft restored'))
-    expect(wrapper.get<HTMLInputElement>('input[inputmode="decimal"]').element.value).toBe('42.75')
-    expect(wrapper.get<HTMLInputElement>('input[maxlength="140"]').element.value).toBe(
-      'Unfinished payment',
-    )
-    expect((await repository.load()).transfers).toHaveLength(6)
-  })
   it('lets the user return from review with their form values intact', async () => {
     const { wrapper } = await page()
     await details(wrapper)
@@ -230,48 +216,34 @@ describe('transfer details → review → confirmation → receipt', () => {
     complete()
     await vi.waitFor(() => expect(wrapper.text()).toContain('Transfer complete'))
   })
-  it.each(['lost response', 'malformed HTTP 200 receipt'])(
-    'recovers a committed %s with the same key and no second debit',
-    async (failureMode) => {
-      const keys: string[] = []
-      server.use(
-        http.post('*/api/transfers', async ({ request }) => {
-          const body = (await request.json()) as TransferRequest
-          keys.push(body.idempotencyKey)
-          const result = await executeTransfer(repository, body)
-          if (keys.length === 1) {
-            return failureMode === 'lost response'
-              ? HttpResponse.error()
-              : HttpResponse.json({ ...result, amountMinor: '1050' }, { status: 200 })
-          }
-          return HttpResponse.json(result)
-        }),
-      )
-      const { wrapper, router } = await page()
-      const before = await repository.load()
-      await details(wrapper)
-      await button(wrapper, 'Confirm transfer').trigger('click')
-      await vi.waitFor(() =>
-        expect(wrapper.text()).toContain("couldn't confirm whether money moved"),
-      )
-      await delay(40)
-      expect(keys).toHaveLength(1)
-      expect(wrapper.text()).not.toContain('Transfer complete')
-      const committed = await repository.load()
-      expect(committed.transfers).toHaveLength(before.transfers.length + 1)
-      expect(committed.accounts[0]!.balanceMinor).toBe(before.accounts[0]!.balanceMinor - 1050)
-      expect(button(wrapper, 'Back').attributes()).toHaveProperty('disabled')
-      await router.push('/accounts')
-      expect(router.currentRoute.value.path).toBe('/transfer')
-      await button(wrapper, 'Retry same transfer').trigger('click')
-      await vi.waitFor(() => expect(wrapper.text()).toContain('Transfer complete'))
-      expect(keys).toHaveLength(2)
-      expect(keys[0]).toBe(keys[1])
-      const after = await repository.load()
-      expect(after.transfers).toHaveLength(before.transfers.length + 1)
-      expect(after.accounts[0]!.balanceMinor).toBe(before.accounts[0]!.balanceMinor - 1050)
-    },
-  )
+  it('recovers a lost success response with the same key and no second debit', async () => {
+    const keys: string[] = []
+    server.use(
+      http.post('*/api/transfers', async ({ request }) => {
+        const body = (await request.json()) as TransferRequest
+        keys.push(body.idempotencyKey)
+        const result = await executeTransfer(repository, body)
+        return keys.length === 1 ? HttpResponse.error() : HttpResponse.json(result)
+      }),
+    )
+    const { wrapper, router } = await page()
+    const before = await repository.load()
+    await details(wrapper)
+    await button(wrapper, 'Confirm transfer').trigger('click')
+    await vi.waitFor(() => expect(wrapper.text()).toContain("couldn't confirm whether money moved"))
+    await delay(40)
+    expect(keys).toHaveLength(1)
+    expect(button(wrapper, 'Back').attributes()).toHaveProperty('disabled')
+    await router.push('/accounts')
+    expect(router.currentRoute.value.path).toBe('/transfer')
+    await button(wrapper, 'Retry same transfer').trigger('click')
+    await vi.waitFor(() => expect(wrapper.text()).toContain('Transfer complete'))
+    expect(keys).toHaveLength(2)
+    expect(keys[0]).toBe(keys[1])
+    const after = await repository.load()
+    expect(after.transfers).toHaveLength(before.transfers.length + 1)
+    expect(after.accounts[0]!.balanceMinor).toBe(before.accounts[0]!.balanceMinor - 1050)
+  })
   it('keeps a confirmed receipt visible even when refreshing accounts fails', async () => {
     const { wrapper } = await page()
     await details(wrapper)

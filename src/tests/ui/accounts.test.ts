@@ -65,7 +65,7 @@ describe('Accounts and Overview', () => {
     expect(wrapper.findAll('.bank-card-skeleton')).toHaveLength(3)
     await vi.waitFor(() => expect(wrapper.text()).toContain('Everyday Checking'))
     expect(wrapper.findAll('article')).toHaveLength(3)
-    expect(wrapper.get('article').text()).not.toContain('Personal Finance Lab')
+    expect(wrapper.get('article').text()).not.toContain('raksul-bank')
     expect(wrapper.text()).toContain('$30,776.05')
     expect(wrapper.text()).toContain('•••• 4821')
     for (const account of seed.accounts) expect(wrapper.html()).not.toContain(account.accountNumber)

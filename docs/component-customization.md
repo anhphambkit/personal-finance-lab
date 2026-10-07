@@ -187,8 +187,6 @@ Field slots replace the contents of the existing responsive field wrappers. `ext
 
 `actions` also receives `apply()` and `clear()`. `apply()` runs the existing validation and is ignored while busy. `clear()` clears local edits and emits the existing `clear` event. The `error` slot receives `{ message }` inside the existing alert.
 
-Form submission (including Enter in a field) does not apply filters; the default Apply button invokes `apply()`. Clearing a nonempty search through the default input or `update({ query: '' })` immediately applies the current draft after validation, including while a previous read is fetching. Other edits remain unapplied until Apply is activated.
-
 ```vue
 <TransactionFilters
   :filters="filters"
@@ -279,7 +277,3 @@ Import from `src/features/insights/components/SpendingDashboard.vue`. The requir
 The `summary`, `trend` and `breakdown` slots each receive `{ insight }` with working default content. Trend and breakdown retain their section headings when overridden. Custom summary content should provide an appropriate heading and exact amount/count. Custom charts should retain accessible text values; the default trend pairs decorative bars with a visible monthly amounts list. The accounting-scope explanation remains outside the slots.
 
 This component only renders supplied data. Query loading/error/retry, URL filters and API ownership checks belong to the page/composables/loader. It does not fetch, mutate banking state or infer categories.
-
-## LoginForm
-
-`src/features/auth/components/LoginForm.vue` accepts `busy` (false), `error` (empty string), and merged `ui` overrides for `root`, `header`, `form`, and `demo`. Its `submit` event supplies `{ email, password }`; the optional `intro` slot replaces introductory copy. The form retains required fields, password autocomplete, accessible labels, error announcement and busy submission guards. Credentials remain local form state and are never stored by the component. Stories include default, busy, error and customization.

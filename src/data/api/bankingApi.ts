@@ -1,21 +1,13 @@
-import type { TransactionQuery } from '../../contracts/transactions'
+import type { CreateBeneficiaryRequest } from '../../contracts/beneficiaries'
+import type { Customer } from '../../domain/customers/customer'
+import type { Account } from '../../domain/accounts/account'
+import type { Beneficiary } from '../../domain/beneficiaries/beneficiary'
+import type { PaginatedTransactions, TransactionQuery } from '../../contracts/transactions'
 import type { BankingApi } from '../../contracts/banking'
-import type { TransferRequest } from '../../contracts/transfers'
-import type { z } from 'zod'
-import {
-  customerResponseSchema,
-  accountResponseSchema,
-  accountsResponseSchema,
-  transactionsResponseSchema,
-  recipientResponseSchema,
-  beneficiaryResponseSchema,
-  beneficiariesResponseSchema,
-  transferReceiptResponseSchema,
-  resetResponseSchema,
-} from './bankingResponseSchemas'
+import type { TransferRequest, TransferReceipt } from '../../contracts/transfers'
 import { ApiError } from './apiError'
 
-/** Validated boundary for banking API responses. Abort signals pass through to fetch. */
+/** Typed boundary for the controlled mock API. Abort signals pass through to fetch. */
 export type BankingFetch = (
   url: string,
   init: { method: string; signal?: AbortSignal; headers: Record<string, string>; body?: string },
@@ -27,7 +19,6 @@ export function createBankingApi(
 ): BankingApi {
   async function request<T>(
     path: string,
-    schema: z.ZodType<T>,
     signal?: AbortSignal,
     method = 'GET',
     body?: unknown,
@@ -69,45 +60,31 @@ export function createBankingApi(
       }
       throw new ApiError(response.status, code, message)
     }
-    try {
-      const body: unknown = response.status === 204 ? undefined : await response.json()
-      const result = schema.safeParse(body)
-      if (result.success) return result.data
-    } catch (error) {
-      if (signal?.aborted) throw error
-    }
-    // A malformed mutation response is an unknown outcome, not a terminal rejection.
-    throw new ApiError(
-      502,
-      'INVALID_RESPONSE',
-      'The banking response could not be verified. Please try again.',
-    )
+    if (response.status === 204) return undefined as T
+    return response.json() as Promise<T>
   }
   return {
-    customer: (signal?: AbortSignal) => request('customer', customerResponseSchema, signal),
-    accounts: (signal?: AbortSignal) => request('accounts', accountsResponseSchema, signal),
+    customer: (signal?: AbortSignal) => request<Customer>('customer', signal),
+    accounts: (signal?: AbortSignal) => request<Account[]>('accounts', signal),
     account: (id: string, signal?: AbortSignal) =>
-      request(`accounts/${encodeURIComponent(id)}`, accountResponseSchema, signal),
+      request<Account>(`accounts/${encodeURIComponent(id)}`, signal),
     transactions: (query: Partial<TransactionQuery> = {}, signal?: AbortSignal) => {
       const params = new URLSearchParams()
       for (const [key, value] of Object.entries(query))
         if (value !== undefined) params.set(key, String(value))
-      return request(`transactions?${params}`, transactionsResponseSchema, signal)
+      return request<PaginatedTransactions>(`transactions?${params}`, signal)
     },
     lookupRecipient: (accountNumber, signal) =>
-      request(
+      request<CreateBeneficiaryRequest>(
         `recipient-accounts/${encodeURIComponent(accountNumber)}`,
-        recipientResponseSchema,
         signal,
       ),
-    beneficiaries: (signal?: AbortSignal) =>
-      request('beneficiaries', beneficiariesResponseSchema, signal),
-    createBeneficiary: (body) =>
-      request('beneficiaries', beneficiaryResponseSchema, undefined, 'POST', body),
+    beneficiaries: (signal?: AbortSignal) => request<Beneficiary[]>('beneficiaries', signal),
+    createBeneficiary: (body) => request<Beneficiary>('beneficiaries', undefined, 'POST', body),
     executeTransfer: (body: TransferRequest) =>
-      request('transfers', transferReceiptResponseSchema, undefined, 'POST', body),
+      request<TransferReceipt>('transfers', undefined, 'POST', body),
     transfer: (id: string, signal?: AbortSignal) =>
-      request(`transfers/${encodeURIComponent(id)}`, transferReceiptResponseSchema, signal),
-    reset: (signal?: AbortSignal) => request('demo/reset', resetResponseSchema, signal, 'POST'),
+      request<TransferReceipt>(`transfers/${encodeURIComponent(id)}`, signal),
+    reset: (signal?: AbortSignal) => request<void>('demo/reset', signal, 'POST'),
   }
 }

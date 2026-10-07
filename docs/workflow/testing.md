@@ -10,7 +10,7 @@ Read [project testing](../testing.md) for setup and actual boundaries. Use Node/
 | Runtime code                     | Lint, formatting, links when docs change, targeted behavior tests during iteration; full Vitest + production build before handoff                                                                                             |
 | Domain/use-case/repository/money | Runtime gates + relevant validation, atomicity, concurrency, rollback, idempotency/recovery tests; SSR/E2E when externally observable behavior changes                                                                        |
 | Component/UI/page/style          | Runtime gates + component/default/slot tests appropriate to behavior; Storybook build/checks for stories or catalog components; app E2E and visual comparison for changed presentation; inspect light/dark and 390/768/1440px |
-| API/Nitro/plugins/auth/config    | Runtime gates + schema/HTTP and BFF handler/adapter tests; add authenticated real-service E2E when server-rendered behavior changes                                                                                           |
+| API/Nitro/plugins/config         | Runtime gates + mock HTTP/client tests, fail-closed Nitro assertions and built-browser coverage when startup behavior changes                                                                                                 |
 | Full feature crossing layers     | All relevant rows, including SSR/E2E and Storybook/visual for changed UI                                                                                                                                                      |
 | Dependency/toolchain/test config | Static gates, full Vitest/build and affected SSR/browser/Storybook suites; assess new dependencies and lockfile/advisories                                                                                                    |
 
@@ -24,7 +24,6 @@ npm run format:check
 npm run check:links
 npm run test -- --run
 npm run build
-npm run test:bff:service
 PLAYWRIGHT_BROWSERS_PATH=.tools/playwright npm run test:e2e:built
 npm run build-storybook
 PLAYWRIGHT_BROWSERS_PATH=.tools/playwright npm run test:storybook

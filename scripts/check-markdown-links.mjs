@@ -4,29 +4,24 @@ import { dirname, relative, resolve } from 'node:path'
 import process from 'node:process'
 
 const root = process.cwd()
-const adrDirectory = resolve(root, 'docs/adr')
-const adrDocuments = (await readdir(adrDirectory))
-  .filter((name) => name.endsWith('.md'))
-  .map((name) => resolve(adrDirectory, name))
-async function markdownFiles(directory) {
+
+async function markdownDocuments(directory) {
   const entries = await readdir(directory, { withFileTypes: true })
-  const nested = await Promise.all(
-    entries.map((entry) => {
-      const path = resolve(directory, entry.name)
-      if (entry.isDirectory()) return markdownFiles(path)
-      return entry.name.endsWith('.md') ? [path] : []
-    }),
-  )
-  return nested.flat()
+  const documents = []
+  for (const entry of entries) {
+    const path = resolve(directory, entry.name)
+    if (entry.isDirectory()) documents.push(...(await markdownDocuments(path)))
+    else if (entry.isFile() && entry.name.endsWith('.md')) documents.push(path)
+  }
+  return documents
 }
 
 const documents = [
   resolve(root, 'README.md'),
   resolve(root, 'AGENTS.md'),
-  resolve(root, 'docs/bff.md'),
-  ...adrDocuments,
-  ...(await markdownFiles(resolve(root, 'docs/workflow'))),
-  ...(await markdownFiles(resolve(root, '.agents/skills'))),
+  ...(await markdownDocuments(resolve(root, 'docs/adr'))),
+  ...(await markdownDocuments(resolve(root, 'docs/workflow'))),
+  ...(await markdownDocuments(resolve(root, '.agents/skills'))),
 ]
 
 function headingAnchors(markdown) {

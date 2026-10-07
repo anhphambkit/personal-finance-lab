@@ -1,4 +1,3 @@
-import { createBankingSession } from '@/data/api/bankingSession'
 import { vi } from 'vitest'
 import { config } from '@vue/test-utils'
 import { ref } from 'vue'
@@ -7,16 +6,7 @@ import { createBankingApi } from '@/data/api/bankingApi'
 
 vi.stubGlobal('definePageMeta', () => {})
 config.global.provide = {
-  [bankingContextKey as symbol]: {
-    api: createBankingApi(),
-    ready: ref(true),
-    mocksEnabled: true,
-    session: createBankingSession({
-      userId: ref('customer-taylor'),
-      ready: ref(true),
-      resolveCustomer: () => createBankingApi().customer(),
-    }),
-  },
+  [bankingContextKey as symbol]: { api: createBankingApi(), ready: ref(true) },
 }
 import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
 import { enableAutoUnmount } from '@vue/test-utils'

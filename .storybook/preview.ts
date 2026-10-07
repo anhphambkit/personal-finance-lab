@@ -1,4 +1,3 @@
-import { createBankingSession } from '../src/data/api/bankingSession'
 import { setup, type Preview } from '@storybook/vue3-vite'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
@@ -14,16 +13,7 @@ setup((app) => {
     routes: [{ path: '/:pathMatch(.*)*', component: { template: '<div />' } }],
   })
   app.use(router).use(ui).use(VueQueryPlugin, { queryClient: new QueryClient() })
-  app.provide(bankingContextKey, {
-    api: createBankingApi(),
-    ready: ref(true),
-    mocksEnabled: true,
-    session: createBankingSession({
-      userId: ref('customer-taylor'),
-      ready: ref(true),
-      resolveCustomer: () => createBankingApi().customer(),
-    }),
-  })
+  app.provide(bankingContextKey, { api: createBankingApi(), ready: ref(true) })
 })
 const preview: Preview = {
   loaders: [

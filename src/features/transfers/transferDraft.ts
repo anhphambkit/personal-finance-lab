@@ -126,7 +126,7 @@ export function prepareTransfer(
       valid.recipientType === 'OWN_ACCOUNT'
         ? {
             name: target!.displayName,
-            bankName: 'Demo Bank',
+            bankName: 'Raksul-bank',
             accountNumber: target!.accountNumber,
           }
         : beneficiary
@@ -138,7 +138,7 @@ export function prepareTransfer(
           : {
               name: valid.recipientName.trim(),
               bankName:
-                valid.recipientNetwork === 'SAME_BANK' ? 'Demo Bank' : valid.bankName.trim(),
+                valid.recipientNetwork === 'SAME_BANK' ? 'Raksul-bank' : valid.bankName.trim(),
               accountNumber: valid.recipientAccountId.trim(),
             },
     request: {
@@ -155,7 +155,7 @@ export function prepareTransfer(
                 beneficiary: {
                   displayName: valid.recipientName.trim(),
                   bankName:
-                    valid.recipientNetwork === 'SAME_BANK' ? 'Demo Bank' : valid.bankName.trim(),
+                    valid.recipientNetwork === 'SAME_BANK' ? 'Raksul-bank' : valid.bankName.trim(),
                   accountNumber: valid.recipientAccountId.trim(),
                   currency: 'USD',
                 },

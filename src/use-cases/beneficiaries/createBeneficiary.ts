@@ -28,7 +28,7 @@ export function resolveBeneficiary(
     request.currency !== 'USD'
   )
     throw new DomainError('INVALID_RECIPIENT', 'Check the recipient name, bank and account number.')
-  const sameBank = request.bankName.toLowerCase() === 'demo bank'
+  const sameBank = request.bankName.toLowerCase() === 'raksul-bank'
   const target = sameBank
     ? state.accounts.find((account) => account.accountNumber === request.accountNumber)
     : undefined
@@ -38,7 +38,7 @@ export function resolveBeneficiary(
       'Choose an available recipient account and its correct bank. Use My accounts for your own accounts.',
     )
   if (!target && sameBank)
-    throw new DomainError('INVALID_RECIPIENT', 'This Demo Bank recipient account was not found.')
+    throw new DomainError('INVALID_RECIPIENT', 'This Raksul-bank recipient account was not found.')
   if (target) request.displayName = target.displayName
   const previous = state.beneficiaries.find(
     (item) =>

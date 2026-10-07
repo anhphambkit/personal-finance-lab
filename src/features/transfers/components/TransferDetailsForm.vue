@@ -110,7 +110,7 @@ const matchingContact = computed(() =>
       item.accountNumber === state.recipientAccountId.trim() &&
       item.bankName.toLowerCase() ===
         (state.recipientNetwork === 'SAME_BANK'
-          ? 'demo bank'
+          ? 'raksul-bank'
           : state.bankName.trim().toLowerCase()),
   ),
 )
@@ -153,7 +153,7 @@ if (
   checkedRecipient.value = {
     displayName: state.recipientName,
     accountNumber: state.verifiedAccountNumber,
-    bankName: 'Demo Bank',
+    bankName: 'Raksul-bank',
     currency: 'USD',
   }
 }
@@ -347,7 +347,7 @@ async function focusError(event: { errors: { id?: string }[] }) {
         <URadioGroup
           v-model="state.recipientNetwork"
           :items="[
-            { label: 'Same bank', description: 'Demo Bank account', value: 'SAME_BANK' },
+            { label: 'Same bank', description: 'Raksul-bank account', value: 'SAME_BANK' },
             { label: 'Other bank', description: 'Domestic bank account', value: 'OTHER_BANK' },
           ]"
           orientation="horizontal"
@@ -452,7 +452,7 @@ async function focusError(event: { errors: { id?: string }[] }) {
             <p class="truncate font-semibold text-highlighted">
               {{ checkedRecipient.displayName }}
             </p>
-            <p class="text-sm text-muted">Verified Demo Bank account</p>
+            <p class="text-sm text-muted">Verified Raksul-bank account</p>
           </div>
         </div>
 
@@ -489,7 +489,6 @@ async function focusError(event: { errors: { id?: string }[] }) {
       <UFormField label="Reference" name="reference" hint="Optional">
         <UInput
           v-model="state.reference"
-          aria-label="Reference"
           placeholder="What's this for?"
           :maxlength="140"
           class="w-full"

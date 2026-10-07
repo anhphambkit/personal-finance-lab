@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useNuxtApp, useRoute } from '#app'
+import { useRoute } from '#app'
 import type { NavigationMenuItem } from '@nuxt/ui'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UDashboardGroup from '@nuxt/ui/components/DashboardGroup.vue'
@@ -10,7 +10,6 @@ import UDashboardSidebar from '@nuxt/ui/components/DashboardSidebar.vue'
 import UNavigationMenu from '@nuxt/ui/components/NavigationMenu.vue'
 
 const route = useRoute()
-const { $auth, $banking } = useNuxtApp()
 const sidebarOpen = ref(false)
 const mainContent = ref<HTMLElement>()
 const pageTitle = computed(() => String(route.meta.title ?? 'Personal banking'))
@@ -99,7 +98,7 @@ watch(
       <template #header>
         <NuxtLink
           to="/"
-          aria-label="Personal Finance Lab overview"
+          aria-label="Raksul-bank overview"
           class="bank-brand flex items-center gap-3"
           @click="closeIfCurrentPage('/')"
         >
@@ -107,11 +106,9 @@ watch(
             aria-hidden="true"
             class="flex size-9 shrink-0 items-center justify-center bank-brand-mark rounded-xl bg-primary text-2xl leading-none font-semibold text-white"
           >
-            p.
+            r.
           </span>
-          <span class="text-lg font-semibold tracking-tight text-highlighted">
-            Personal Finance Lab
-          </span>
+          <span class="text-lg font-semibold tracking-tight text-highlighted">raksul-bank</span>
         </NuxtLink>
       </template>
 
@@ -158,16 +155,6 @@ watch(
             </nav>
           </template>
           <template #right>
-            <UButton
-              v-if="!$banking.mocksEnabled"
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-log-out"
-              :loading="$auth.busy.value"
-              @click="$auth.logout()"
-            >
-              Sign out
-            </UButton>
             <ClientOnly>
               <UColorModeButton />
               <template #fallback><span class="size-8" aria-hidden="true" /></template>

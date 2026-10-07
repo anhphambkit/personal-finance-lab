@@ -1,9 +1,5 @@
 import { test, expect } from '@playwright/test'
 const stories = [
-  'loginform--default',
-  'loginform--busy',
-  'loginform--error',
-  'loginform--customized',
   'spendingdashboard--populated',
   'spendingdashboard--empty',
   'spendingdashboard--no-prior-spending',
@@ -39,7 +35,7 @@ for (const theme of ['light', 'dark']) {
   })
 }
 
-test('nine component groups are indexed and Controls update the rendered amount', async ({
+test('eight component groups are indexed and Controls update the rendered amount', async ({
   page,
   request,
 }) => {
@@ -50,7 +46,7 @@ test('nine component groups are indexed and Controls update the rendered amount'
         .filter((entry) => entry.type === 'story')
         .map((entry) => entry.title),
     ).size,
-  ).toBe(9)
+  ).toBe(8)
   await page.goto('/?path=/story/banking-moneydisplay--default')
   await page.getByRole('tab', { name: /Controls/ }).click()
   await page.locator('#control-amountMinor').fill('250075')

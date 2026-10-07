@@ -5,29 +5,26 @@ import { once } from 'node:events'
 
 export async function createTestEnvironment() {
   const children = []
-  async function start(extraEnv) {
+
+  async function start(extraEnv = {}) {
     const listener = createServer()
     listener.listen(0, '127.0.0.1')
     await once(listener, 'listening')
     const port = listener.address().port
     await new Promise((resolve) => listener.close(resolve))
+
     const child = spawn(process.execPath, ['.output/server/index.mjs'], {
-      env: {
-        ...process.env,
-        NITRO_HOST: '127.0.0.1',
-        NITRO_PORT: String(port),
-        NUXT_PUBLIC_ENABLE_BFF: 'false',
-        ...extraEnv,
-      },
+      env: { ...process.env, NITRO_HOST: '127.0.0.1', NITRO_PORT: String(port), ...extraEnv },
       stdio: ['ignore', 'pipe', 'pipe'],
     })
     children.push(child)
+
     let logs = ''
     child.stderr.on('data', (chunk) => {
       logs += chunk
     })
     const url = await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(`Server timeout: ${logs}`)), 20000)
+      const timer = setTimeout(() => reject(new Error(`Server timeout: ${logs}`)), 20_000)
       child.once('error', (error) => {
         clearTimeout(timer)
         reject(error)
@@ -47,6 +44,7 @@ export async function createTestEnvironment() {
     })
     return { url, logs: () => logs }
   }
+
   return {
     start,
     close: async () => {

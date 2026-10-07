@@ -4,7 +4,7 @@ Own assigned tests and fixtures only; implementation fixes return to the relevan
 
 For fixes reproduce the defect with a meaningful regression assertion where practical. For money/recovery changes cover exact values, replay/conflict, competing writes, rollback and uncertain outcomes. For components test observable behavior, defaults/customization and accessibility interactions. Avoid assertion weakening, arbitrary waits and implementation-mirroring tests.
 
-Run the matrix appropriate to scope after writers finish; coordinate exclusive app/Storybook output directories. Browser MSW does not prove authenticated Nitro behavior: use BFF handler/adapter tests and, when required, an isolated standalone-service environment for request isolation, auth forwarding, errors, cache hydration and no SSR mutation. Never test against real customer funds.
+Run the matrix appropriate to scope after writers finish; coordinate exclusive app/Storybook output directories. The application is browser-mock-only: verify MSW startup, native IndexedDB behavior and that direct Nitro API requests fail closed. Never test against real customer funds.
 
 Visually inspect changed UI in both themes and responsive sizes. Compare baselines on matching OS/browser/fonts; investigate mismatch. Only accept updated baselines after inspecting intentional differences and within implementation scope, never in verify-only mode.
 

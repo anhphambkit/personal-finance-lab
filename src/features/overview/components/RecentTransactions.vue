@@ -49,10 +49,10 @@ const limit = computed(() =>
   Number.isFinite(props.limit) ? Math.min(100, Math.max(1, Math.floor(props.limit))) : 5,
 )
 const query = computed(() => ({ page: 1, pageSize: limit.value }))
-const { api, ready, session } = useBankingContext()
+const { api, ready } = useBankingContext()
 const { data, isPending, isFetching, isError, error, refetch, suspense } = useQuery({
   enabled: ready,
-  queryKey: computed(() => bankingQueryKeys.transactions(session.scope.value, query.value)),
+  queryKey: computed(() => bankingQueryKeys.transactions(query.value)),
   queryFn: ({ signal }) => api.transactions(query.value, signal),
 })
 onServerPrefetch(async () => {

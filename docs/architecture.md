@@ -1,8 +1,6 @@
 # Production banking architecture proposal
 
-> The current sample implements `Browser -> Nuxt BFF -> standalone Node.js API -> SQLite`. Browser MSW and IndexedDB remain the explicit mock adapter. See [BFF setup](bff.md).
-
-This document proposes production infrastructure beyond the implemented local service. The standalone backend provides fictional password login, opaque tokens, authorization, durable SQLite models and atomic transfers. It does not provide a production identity provider, distributed database, payment rails or operational controls.
+This is a design proposal, not implemented infrastructure. The running work sample uses Nuxt/Vue, browser MSW, a single IndexedDB snapshot and an assumed fictional customer. Its Nitro API route fails closed and does not forward requests; there is no login, authorization, production database or payment rail.
 
 ## Components and communication
 
@@ -35,7 +33,7 @@ The browser retains page/form state and an expendable API cache. Nuxt renders re
 
 1. Nuxt initiates an OIDC authorization-code login with an authentication service, validates the response and creates a server-managed session. OIDC supplies authenticated identity on top of OAuth; an ID token is not a substitute for an API access token. Use an established OIDC client with state/nonce validation and provider-supported PKCE. [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html).
 2. Keep provider tokens server-side and use a Secure, HttpOnly session cookie in the browser. Define expiry, renewal, logout and revocation. The API validates its access-token issuer, audience, signature and expiry, then resolves customer identity from trusted claims rather than a caller-supplied customer ID.
-3. Nuxt SSR forwards only the server-held credential for that session. Banking queries check resource ownership before filtering or returning data. Keep responses private/no-store and clear Vue Query on logout or identity change.
+3. Nuxt SSR forwards only that request's identity. Banking queries check resource ownership before filtering or returning data. Keep responses private/no-store and clear Vue Query on logout or identity change. The current mock/fail-closed tests do not implement or prove this future transport boundary; add isolated proxy, payload and identity tests with the integration.
 4. Apply CSRF protection to cookie-authenticated mutations, including origin checks and a validated token. SameSite cookies are additional protection rather than the entire control. No state changes occur through GET. [OWASP CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 5. The browser submits a transfer with a stable request key. After server commit, the response contains a receipt and the client invalidates account/activity queries. A timeout remains an unknown result; the client can query durable request status or explicitly repeat the same key.
 
@@ -78,13 +76,13 @@ External payments cannot atomically commit a database write and a remote payment
 
 ## Mapping from this work sample
 
-| Existing boundary                 | Proposed production responsibility                                                                           |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `src/features`, `src/contracts`   | Reusable UI/query contracts, with durable pending-request recovery and authenticated session behavior added. |
-| `server/api/[...path].ts`         | Extend the forwarding boundary with a complete session lifecycle and CSRF policy.                            |
-| MSW handlers                      | Retain for deterministic browser tests; real mode uses the standalone Banking API through the Nuxt BFF.      |
-| Pure domain and transfer use case | Reuse rules where appropriate; move authoritative checks and money changes to the backend.                   |
-| IndexedDB snapshot                | Replace with transactional relational storage, ledger projections and server-side idempotency.               |
-| Fictional current customer        | Replace with authenticated identity and resource-level authorization.                                        |
+| Existing boundary                 | Proposed production responsibility                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `src/features`, `src/contracts`   | Reusable UI/query contracts, with durable pending-request recovery and authenticated session behavior added.  |
+| `server/api/[...path].ts`         | Replace the fail-closed demo route with an allowlisted transport, complete session lifecycle and CSRF policy. |
+| MSW handlers                      | Replace with the real Banking API; retain MSW/HTTP fixtures for deterministic tests.                          |
+| Pure domain and transfer use case | Reuse rules where appropriate; move authoritative checks and money changes to the backend.                    |
+| IndexedDB snapshot                | Replace with transactional relational storage, ledger projections and server-side idempotency.                |
+| Fictional current customer        | Replace with authenticated identity and resource-level authorization.                                         |
 
-Backend integration requires contract tests plus isolated authenticated end-to-end scenarios. MSW and test-only BFF doubles do not prove compliance with a deployed bank API. See [backend handoff](nuxt-migration.md), [testing boundaries](testing.md) and the [architecture decisions](adr/001-feature-oriented-vue-architecture.md).
+Backend integration would require contract tests plus isolated authenticated end-to-end scenarios. The mock suite does not prove compliance with a real bank API. See [future backend handoff](nuxt-migration.md), [testing boundaries](testing.md) and the [architecture decisions](adr/001-feature-oriented-vue-architecture.md).

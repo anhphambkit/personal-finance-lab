@@ -1,10 +1,9 @@
 import type { TransactionQuery } from '../../contracts/transactions'
 
-type Scope = readonly [string | null, number]
 export const bankingQueryKeys = {
   all: ['bank'] as const,
-  accounts: (scope: Scope) => ['bank', ...scope, 'accounts'] as const,
-  beneficiaries: (scope: Scope) => ['bank', ...scope, 'beneficiaries'] as const,
-  transactions: (scope: Scope, query: TransactionQuery) =>
-    ['bank', ...scope, 'transactions', query] as const,
+  accounts: ['bank', 'accounts'] as const,
+  beneficiaries: ['bank', 'beneficiaries'] as const,
+  transactions: (query: TransactionQuery) => ['bank', 'transactions', query] as const,
+  recentTransactions: ['bank', 'transactions', { page: 1, pageSize: 5 }] as const,
 }

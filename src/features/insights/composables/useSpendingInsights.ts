@@ -5,14 +5,9 @@ import { useBankingContext } from '@/data/api/bankingContext'
 import { loadSpendingInsights } from '@/data/api/loadSpendingInsights'
 
 export function useSpendingInsights(query: Ref<SpendingQuery | undefined>) {
-  const { api, ready, session } = useBankingContext()
+  const { api, ready } = useBankingContext()
   const result = useQuery({
-    queryKey: computed(() => [
-      'bank',
-      ...session.scope.value,
-      'spending-insights',
-      query.value ?? 'invalid',
-    ]),
+    queryKey: computed(() => ['bank', 'spending-insights', query.value ?? 'invalid']),
     enabled: computed(() => ready.value && !!query.value),
     queryFn: ({ signal }) => loadSpendingInsights(api, query.value!, signal),
   })

@@ -52,7 +52,7 @@ describe('recipient creation', () => {
       before.accounts[0]!.balanceMinor - 1250,
     )
   })
-  it.each([{ accountNumber: '123' }, { bankName: 'Demo Bank' }, { displayName: ' ' }])(
+  it.each([{ accountNumber: '123' }, { bankName: 'Raksul-bank' }, { displayName: ' ' }])(
     'rejects %j without mutations',
     async (patch) => {
       const factory = new IDBFactory()
@@ -71,14 +71,14 @@ describe('recipient creation', () => {
     const target = state.accounts.find((a) => a.ownerId !== state.customer.id)!
     const saved = await createBeneficiary(repo, {
       ...input,
-      bankName: 'Demo Bank',
+      bankName: 'Raksul-bank',
       accountNumber: target.accountNumber,
     })
     expect(saved.internalAccountId).toBe(target.id)
     await expect(
       createBeneficiary(repo, {
         ...input,
-        bankName: 'Demo Bank',
+        bankName: 'Raksul-bank',
         accountNumber: state.accounts[0]!.accountNumber,
       }),
     ).rejects.toMatchObject({ code: 'INVALID_RECIPIENT' })

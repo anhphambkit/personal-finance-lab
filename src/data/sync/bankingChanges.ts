@@ -1,7 +1,7 @@
-export const BANKING_CHANGE_KEY = 'personal-finance-lab-change'
-export const DEMO_RESET_KEY = 'personal-finance-lab-reset-generation'
-export const RECOVERY_PREFIX = 'personal-finance-lab-transfer-v1:'
-export const BANKING_RESET_EVENT = 'personal-finance-lab-reset'
+export const BANKING_CHANGE_KEY = 'raksul-bank-change'
+export const DEMO_RESET_KEY = 'raksul-bank-reset-generation'
+export const RECOVERY_PREFIX = 'raksul-transfer-v1:'
+export const BANKING_RESET_EVENT = 'raksul-bank-reset'
 /** Publish only a change token after commit, never banking data. Reads do not publish. */
 export function publishBankingChange(reset = false) {
   if (typeof window === 'undefined') return

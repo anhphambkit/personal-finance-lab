@@ -9,7 +9,7 @@ This document maps the product requirements to the implementation and verificati
 - New recipients are saved only when the current form's **Save recipient for next time** option is selected and the transfer commits. One-time transfers retain the receipt snapshot without adding a contact. The explicit save choice is part of idempotency; legacy requests remain replayable.
 - Same-bank lookup is independent of saved contacts. The prefilled Jordan Lee account is verified through the demo directory, then becomes a saved recipient only after an opted-in successful transfer.
 - An idempotency conflict offers **Check transaction activity**, refreshes banking queries and permits navigation. It retains its terminal status on reload and never retries or replaces the request key automatically.
-- Verification: 266 unit/component tests, 20 Chromium E2E tests, 5 Storybook checks, lint, formatting, typecheck, production build, SSR smoke, Storybook build and the local link checker passed.
+- Verification: 336 unit/component tests, 23 Chromium E2E tests, 6 Storybook checks, 10 visual comparisons, lint, formatting, typecheck, production build, Storybook build and the local link checker passed.
 
 ## Final checklist — 2026-09-07
 
@@ -41,7 +41,7 @@ The implementation uses 100 seed transactions and saved/new recipients; an inter
 - [x] Loading/error/retry/empty states, currency/date formatting, explicit status labels and basic keyboard/form accessibility.
 - [x] Responsive browser checks at 1440/768/390px, including masking, overflow, transfer review and detail-drawer focus.
 - [x] Duplicate confirmation/replay cannot double-debit; competing writes check current funds; rollback is covered.
-- [x] Nuxt demo shell waits for browser storage readiness; backend SSR uses request-local queries, error serialization and cache hydration without duplicate accounts fetching in the tested flow.
+- [x] Nuxt renders the same loading shell used for initial hydration; browser queries wait for MSW readiness, and direct Nitro banking requests fail closed without forwarding.
 - [x] No console debug logs, TODO/FIXME markers or explicit `any` types in runtime/test source; automated lint and browser checks pass.
 
 ### Nice-to-Have — completed
@@ -50,8 +50,8 @@ The implementation uses 100 seed transactions and saved/new recipients; an inter
 - [x] Save and restore draft/review/immutable retry key after close/reload, with explicit same-key replay and storage-failure protection.
 - [x] Same-origin demo tabs refresh automatically after committed changes/reset; reset clears recovery context.
 - [x] Persistent light/dark mode with responsive theme styling and hydration-safe toggle.
-- [x] Storybook catalog: 11 component states, checked in both light/dark themes.
-- [x] Visual regression: 12 reviewed macOS Chromium baselines across light/dark and desktop/mobile.
+- [x] Storybook catalog: 19 component states across 8 groups, checked in both light/dark themes.
+- [x] Visual regression: 24 macOS Chromium baseline images across 10 light/dark and responsive tests.
 
 - [x] High-value domain/service tests: own/internal/external balances and activity, invalid requests, rollback, idempotency and concurrent spending.
 - [x] Transaction filtering/API/component tests and a native-browser transfer → receipt → balance/activity → reload/reset scenario.
@@ -83,7 +83,7 @@ No outstanding Core or required-deliverable defect was identified. The scope bou
 | Data: deliberate mock boundary and banking model       | PASS   | Domain entities in `src/domain`, public contracts in `src/contracts`, use cases and repository port, thin MSW handlers, validated IndexedDB adapter. ESLint enforces import boundaries.                                                                                                       | Mock ownership projection is not server-side authorization.                                               |
 | Data: included realistic seed                          | PASS   | `src/data/seed/createSeedState.ts`: one fictional customer, three owned accounts, three hidden recipients, six saved beneficiaries, a separate unsaved same-bank directory account, varied activity and six completed seed transfers. Repository tests check deterministic balances/activity. | None within demo scope.                                                                                   |
 | Data: consistency after transfer                       | PASS   | Atomic read/validate/write repository transactions; rollback/concurrent-connection tests in `src/tests/data`; browser transfer/reload/reset checks use native IndexedDB.                                                                                                                      | Browser retention and cross-device state remain outside the demo; same-origin tab refresh is implemented. |
-| Deliverable: working code covering all four Core items | PASS   | Nuxt production build, Vitest tests, SSR integration script and Chromium suites.                                                                                                                                                                                                              | No real backend is required for the demo.                                                                 |
+| Deliverable: working code covering all four Core items | PASS   | Nuxt production build, Vitest tests and Chromium mock-browser/fail-closed suites.                                                                                                                                                                                                             | No real backend is required for the demo.                                                                 |
 | Deliverable: local run instructions                    | PASS   | README Getting Started, `.nvmrc`, `package-lock.json`, `.env.example`, `package.json`; default demo needs no credentials or external database.                                                                                                                                                | Chromium installation is needed only for browser tests.                                                   |
 | Deliverable: mock data in the repository               | PASS   | Deterministic seed factory and MSW handlers are versioned under `src/data`.                                                                                                                                                                                                                   | None.                                                                                                     |
 | Deliverable: README scope and limitations              | PASS   | README highlights, assumptions, known limitations and production considerations.                                                                                                                                                                                                              | None.                                                                                                     |

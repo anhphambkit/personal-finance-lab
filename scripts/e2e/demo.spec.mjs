@@ -1,15 +1,29 @@
 import { test, expect, readAccounts } from './fixtures.mjs'
 
+test('server API boundary fails closed without a browser Service Worker', async ({
+  environment,
+}) => {
+  const response = await fetch(`${environment.demo}/api/accounts`)
+  expect(response.status).toBe(503)
+  expect(response.headers.get('cache-control')).toBe('private, no-store')
+  await expect(response.json()).resolves.toEqual({
+    error: {
+      code: 'DEMO_BROWSER_ONLY',
+      message: 'Demo data needs browser storage. Reload the page and try again.',
+    },
+  })
+})
+
 test('demo hydrates, starts MSW and navigates to accounts', async ({ page, environment }) => {
   const response = await page.goto(environment.demo)
   const html = (await response.text()).replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
-  expect(html).toContain('Loading banking session')
+  expect(html).toContain('Loading accounts')
   expect(html).not.toContain('Everyday Checking')
   await expect(page.getByRole('article', { name: 'Everyday Checking' })).toBeVisible()
   expect(await page.evaluate(() => !!globalThis.navigator.serviceWorker.controller)).toBe(true)
   await page.getByRole('link', { name: 'Accounts', exact: true }).click()
   await expect(page.getByRole('article', { name: 'Everyday Checking' })).toBeVisible()
-  await expect(page).toHaveTitle('Accounts · Personal Finance Lab')
+  await expect(page).toHaveTitle('Accounts · Raksul-bank')
   await expect(page.getByRole('article', { name: 'Travel Reserve' })).toContainText('Frozen')
 })
 

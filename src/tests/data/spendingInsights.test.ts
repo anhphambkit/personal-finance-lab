@@ -2,22 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { createBankingApi, type BankingFetch } from '../../data/api/bankingApi'
 import { ApiError } from '../../data/api/apiError'
 import { loadSpendingInsights } from '../../data/api/loadSpendingInsights'
-import type { Account } from '../../domain/accounts/account'
 import type { Transaction } from '../../domain/transactions/transaction'
-
-function account(id = 'owned'): Account {
-  return {
-    id,
-    ownerId: 'customer',
-    displayName: 'Checking',
-    type: 'CHECKING',
-    accountNumber: '1234567890',
-    currency: 'USD',
-    balanceMinor: 10000,
-    status: 'ACTIVE',
-    createdAt: '2026-01-01T00:00:00Z',
-  }
-}
 
 function transaction(id: number, overrides: Partial<Transaction> = {}): Transaction {
   return {
@@ -46,7 +31,7 @@ function page(data: Transaction[], current = 1, totalItems = data.length) {
   }
 }
 
-function fixture(responses: unknown[], accounts: unknown = [account()]) {
+function fixture(responses: unknown[], accounts: unknown = [{ id: 'owned', currency: 'USD' }]) {
   let index = 0
   const fetcher = vi.fn<BankingFetch>(async (url) => ({
     ok: true,
@@ -114,7 +99,10 @@ describe('spending insights API boundary', () => {
   it('rejects activity from another owned account when one account is selected', async () => {
     const { api } = fixture(
       [page([transaction(1, { accountId: 'other' })])],
-      [account(), account('other')],
+      [
+        { id: 'owned', currency: 'USD' },
+        { id: 'other', currency: 'USD' },
+      ],
     )
     await expect(
       loadSpendingInsights(api, { month: '2026-09', accountId: 'owned' }),
@@ -123,9 +111,12 @@ describe('spending insights API boundary', () => {
 
   it.each([
     null,
-    [{ ...account(), currency: 'EUR' }],
-    [{ ...account(), id: undefined }],
-    [account(), account()],
+    [{ id: 'owned', currency: 'EUR' }],
+    [{ currency: 'USD' }],
+    [
+      { id: 'owned', currency: 'USD' },
+      { id: 'owned', currency: 'USD' },
+    ],
   ])('rejects invalid account data without echoing the payload: %j', async (accounts) => {
     const { api, fetcher } = fixture([], accounts)
     await expect(loadSpendingInsights(api, { month: '2026-09' })).rejects.toMatchObject({
