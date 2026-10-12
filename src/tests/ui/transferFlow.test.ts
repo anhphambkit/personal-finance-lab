@@ -63,7 +63,7 @@ async function details(wrapper: VueWrapper, beneficiary?: string, amount = '10.5
     if (recipient.internalAccountId) {
       await wrapper.get('input[inputmode="numeric"]').setValue(recipient.accountNumber)
       await button(wrapper, 'Check account').trigger('click')
-      await vi.waitFor(() => expect(wrapper.text()).toContain('Verified Raksul-bank account'))
+      await vi.waitFor(() => expect(wrapper.text()).toContain('Verified Personal-bank account'))
     } else {
       wrapper
         .findAllComponents({ name: 'RadioGroup' })[1]!

@@ -4,7 +4,6 @@ dist/
 coverage/
 package-lock.json
 public/mockServiceWorker.js
-RAKSUL_BANK_MASTER_HANDOFF.md
 
 .nuxt/
 .output/

@@ -19,7 +19,7 @@ Nuxt renders navigation, headings and loading states on the server. The banking 
 
 The catch-all Nitro `/api/*` route is deliberately not a backend bridge. A request reaching it returns `503 DEMO_BROWSER_ONLY` with `private, no-store`; it never accepts or forwards an upstream URL, cookie or authorization header. No runtime environment variables are needed.
 
-The IndexedDB database and recovery keys use the `raksul-bank` namespace. Returning to this namespace intentionally creates a fresh fictional demo for browsers that used the later `personal-finance-lab` or `personal-banking-lab` names. Older demo state is not migrated because it is disposable and may contain an unresolved fictional transfer request; users can clear those old site-data entries manually.
+The IndexedDB database and recovery keys use the `personal-bank` namespace. This namespace intentionally creates a fresh fictional demo for browsers that used an earlier demo name. Older demo state is not migrated because it is disposable and may contain an unresolved fictional transfer request; users can clear those old site-data entries manually.
 
 ## Commands
 

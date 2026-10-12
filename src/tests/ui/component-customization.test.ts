@@ -112,7 +112,7 @@ describe('AccountCard customization', () => {
       global: { plugins: [ui, router] },
     })
     expect(wrapper.text()).toContain('Business banking')
-    expect(wrapper.text()).not.toContain('raksul-bank')
+    expect(wrapper.text()).not.toContain('personal-bank')
     expect(wrapper.classes()).toContain('bank-account-card--savings')
     expect(wrapper.get('a').attributes('href')).toBe(`/transfer?from=${account.id}`)
     await wrapper.setProps({ account: { ...account, status: 'FROZEN' } })

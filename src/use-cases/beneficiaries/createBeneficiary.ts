@@ -39,7 +39,10 @@ export function resolveBeneficiary(
       'Choose an available recipient account and its correct bank. Use My accounts for your own accounts.',
     )
   if (!target && sameBank)
-    throw new DomainError('INVALID_RECIPIENT', 'This Raksul-bank recipient account was not found.')
+    throw new DomainError(
+      'INVALID_RECIPIENT',
+      'This Personal-bank recipient account was not found.',
+    )
   if (target) request.displayName = target.displayName
   const previous = state.beneficiaries.find(
     (item) =>

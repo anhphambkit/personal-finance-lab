@@ -1,4 +1,4 @@
-# Raksul-bank
+# Personal-bank
 
 A customer-facing banking dashboard built with Nuxt 4, Vue 3 and strict TypeScript. The demo covers account overview, transaction discovery and consistent transfers without requiring a backend or API key.
 
@@ -156,9 +156,9 @@ The client passes cancellation signals to fetch and surfaces structured API erro
 
 ### Persistence
 
-The IndexedDB database `raksul-bank` stores one versioned snapshot in object store `banking-state`, key `current`. It includes the customer, accounts, transactions, transfers and beneficiaries. Zod validates its structure and relationships.
+The IndexedDB database `personal-bank` stores one versioned snapshot in object store `banking-state`, key `current`. It includes the customer, accounts, transactions, transfers and beneficiaries. Zod validates its structure and relationships.
 
-The return to the `raksul-bank` name intentionally starts a fresh fictional demo for browsers that previously used `personal-finance-lab` or `personal-banking-lab`. Those disposable older namespaces and recovery records are not migrated; they can be removed through the browser's site-data controls.
+The `personal-bank` name intentionally starts a fresh fictional demo for browsers that used an earlier demo name. Those disposable older namespaces and recovery records are not migrated; they can be removed through the browser's site-data controls.
 
 The repository initializes missing data and recovers structurally invalid or incompatible snapshots to the seed. Read/open failures surface without resetting data. Write failures and transaction aborts preserve the previous committed state. A newer database version produces an open error instead of being deleted.
 
@@ -196,7 +196,7 @@ Choose **Someone else**, select **Same bank** or **Other bank**, then use **Save
 
 Entering **Someone else** prefills an unsaved same-bank recipient (Jordan Lee, `200000008319`). Switching to **Other bank** prefills the unsaved Avery Stone at Techcombank (`987654327451`) so the save-recipient flow can be demonstrated. These fields remain editable; restored drafts take precedence and amounts are not prefilled. Same-bank entry still requires **Check account**.
 
-For a quick same-bank demo, select **Alex Rivera** from saved recipients, or use the prefilled, unsaved Jordan Lee account number `200000008319` and choose **Check account**. Jamie Park uses `200000006027`. Same-bank **Check account** calls `GET /api/recipient-accounts/:accountNumber`, which looks up active third-party accounts independently of saved contacts and returns only recipient name, bank, number and currency. Jordan Lee is not saved in the seed: transfer once with or without **Save recipient for next time** to try both paths. Existing local snapshots gain this account without resetting balances or history. It is a fictional directory, not a real bank verification service. External accounts are identified by bank plus account number, so a number matching a Raksul-bank account at another bank remains external.
+For a quick same-bank demo, select **Alex Rivera** from saved recipients, or use the prefilled, unsaved Jordan Lee account number `200000008319` and choose **Check account**. Jamie Park uses `200000006027`. Same-bank **Check account** calls `GET /api/recipient-accounts/:accountNumber`, which looks up active third-party accounts independently of saved contacts and returns only recipient name, bank, number and currency. Jordan Lee is not saved in the seed: transfer once with or without **Save recipient for next time** to try both paths. Existing local snapshots gain this account without resetting balances or history. It is a fictional directory, not a real bank verification service. External accounts are identified by bank plus account number, so a number matching a Personal-bank account at another bank remains external.
 
 Own-account and saved internal-recipient transfers debit the source, credit the destination and create linked debit/credit activity. External recipients receive a stored recipient snapshot and one source debit; there is no external balance or real settlement. Hidden recipient accounts never appear in customer account/activity queries.
 

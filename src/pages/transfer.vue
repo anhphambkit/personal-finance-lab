@@ -163,7 +163,7 @@ async function confirm() {
   flow.value = { kind: 'sending', draft: payment }
   // One confirmation at a time across tabs.
   if (navigator.locks)
-    await navigator.locks.request('raksul-transfer-confirm', { mode: 'exclusive' }, () =>
+    await navigator.locks.request('personal-transfer-confirm', { mode: 'exclusive' }, () =>
       send(payment, previous),
     )
   else await send(payment, previous)

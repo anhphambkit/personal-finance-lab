@@ -16,7 +16,10 @@ export async function lookupRecipient(
     account.ownerId === state.customer.id ||
     account.status !== 'ACTIVE'
   )
-    throw new DomainError('INVALID_RECIPIENT', 'This Raksul-bank recipient account is unavailable.')
+    throw new DomainError(
+      'INVALID_RECIPIENT',
+      'This Personal-bank recipient account is unavailable.',
+    )
   return {
     displayName: account.displayName,
     bankName: HOME_BANK_NAME,

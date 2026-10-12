@@ -1,11 +1,11 @@
 ---
 name: bank
-description: 'Develop features, fix bugs, design components, integrate APIs, or review and verify Raksul-bank using its project rules and separated specialist agents. Use for the bank workflow; not generic banking advice.'
+description: 'Develop features, fix bugs, design components, integrate APIs, or review and verify Personal-bank using its project rules and separated specialist agents. Use for the bank workflow; not generic banking advice.'
 ---
 
 # Bank project workflow
 
-Run the requested mode in the `raksul-bank-sample` repository. Resolve the repository from the current workspace, not from another open IDE tab. Read root `AGENTS.md` and [workflow](../../../docs/workflow/README.md) first; then load only relevant role briefs and rule sources.
+Run the requested mode in the `personal-bank-sample` repository. Resolve the repository from the current workspace, not from another open IDE tab. Read root `AGENTS.md` and [workflow](../../../docs/workflow/README.md) first; then load only relevant role briefs and rule sources.
 
 Invocation: `$bank <mode> <request>`. Modes: `feature` (default), `fix`, `ui`, `api`, `review`, `verify`, `plan`, `resume`. `/bank` is a repository prompt alias, not a built-in slash command. Preserve all text after the mode as user requirements. If scope is missing, ask what to build/review; do not invent a feature.
 

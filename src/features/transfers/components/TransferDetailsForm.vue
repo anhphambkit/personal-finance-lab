@@ -341,7 +341,7 @@ async function focusError(event: { errors: { id?: string }[] }) {
         <URadioGroup
           v-model="state.recipientNetwork"
           :items="[
-            { label: 'Same bank', description: 'Raksul-bank account', value: 'SAME_BANK' },
+            { label: 'Same bank', description: 'Personal-bank account', value: 'SAME_BANK' },
             { label: 'Other bank', description: 'Domestic bank account', value: 'OTHER_BANK' },
           ]"
           orientation="horizontal"
@@ -446,7 +446,7 @@ async function focusError(event: { errors: { id?: string }[] }) {
             <p class="truncate font-semibold text-highlighted">
               {{ checkedRecipient.displayName }}
             </p>
-            <p class="text-sm text-muted">Verified Raksul-bank account</p>
+            <p class="text-sm text-muted">Verified Personal-bank account</p>
           </div>
         </div>
 

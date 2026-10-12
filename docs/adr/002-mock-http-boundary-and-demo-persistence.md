@@ -46,7 +46,7 @@ MSW intercepts browser HTTP requests. Handlers parse requests and map results or
 
 | Setting                 | Value           |
 | ----------------------- | --------------- |
-| Database                | `raksul-bank`   |
+| Database                | `personal-bank` |
 | Database version        | `1`             |
 | Object store            | `banking-state` |
 | Snapshot key            | `current`       |
@@ -112,7 +112,7 @@ The HTTP boundary exercises request and error handling while keeping setup small
 - Cross-tab notifications can fail independently of a successful commit.
 - Cross-device persistence is explicitly deferred.
 - Mock ownership filtering is not server-side authorization. A real integration must supply authentication, authorization, runtime contract validation and transactional persistence.
-- Restoring the `raksul-bank` namespace intentionally starts a fresh fictional demo for browsers that previously stored `personal-finance-lab` or `personal-banking-lab` data. Those older demo namespaces and recovery records are not migrated.
+- The `personal-bank` namespace intentionally starts a fresh fictional demo for browsers that stored data under an earlier demo name. Those older demo namespaces and recovery records are not migrated.
 
 ## Implementation and verification
 

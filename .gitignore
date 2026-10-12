@@ -22,7 +22,6 @@ test-results/
 !.vscode/extensions.json
 
 # Local implementation prompts, plans and progress notes
-/RAKSUL_BANK_MASTER_HANDOFF.md
 /docs/preflight.md
 /docs/implementation-checklist.md
 /docs/codebase-review.md

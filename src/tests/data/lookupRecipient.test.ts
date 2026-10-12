@@ -15,7 +15,7 @@ describe('same-bank recipient directory', () => {
     const before = await repo.load()
     expect(await lookupRecipient(repo, '200000008319')).toEqual({
       displayName: 'Jordan Lee',
-      bankName: 'Raksul-bank',
+      bankName: 'Personal-bank',
       accountNumber: '200000008319',
       currency: 'USD',
     })

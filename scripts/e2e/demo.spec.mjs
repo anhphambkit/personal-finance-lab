@@ -23,7 +23,7 @@ test('demo hydrates, starts MSW and navigates to accounts', async ({ page, envir
   expect(await page.evaluate(() => !!globalThis.navigator.serviceWorker.controller)).toBe(true)
   await page.getByRole('link', { name: 'Accounts', exact: true }).click()
   await expect(page.getByRole('article', { name: 'Everyday Checking' })).toBeVisible()
-  await expect(page).toHaveTitle('Accounts · Raksul-bank')
+  await expect(page).toHaveTitle('Accounts · Personal-bank')
   await expect(page.getByRole('article', { name: 'Travel Reserve' })).toContainText('Frozen')
 })
 

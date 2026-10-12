@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
-      title: 'Raksul-bank',
+      title: 'Personal-bank',
       meta: [
         { name: 'description', content: 'A personal banking dashboard with fictional demo data.' },
       ],

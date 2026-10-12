@@ -2,7 +2,7 @@
 import { useHead, useRoute } from '#imports'
 const route = useRoute()
 useHead(() => ({
-  title: `${String(route.meta.title ?? 'Personal banking')} · Raksul-bank`,
+  title: `${String(route.meta.title ?? 'Personal banking')} · Personal-bank`,
 }))
 </script>
 

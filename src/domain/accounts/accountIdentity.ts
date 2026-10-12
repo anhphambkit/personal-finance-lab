@@ -1,5 +1,5 @@
 /** The demo bank's own name; recipients at this bank map to internal accounts. */
-export const HOME_BANK_NAME = 'Raksul-bank'
+export const HOME_BANK_NAME = 'Personal-bank'
 
 export function isHomeBank(bankName: string) {
   return bankName.trim().toLowerCase() === HOME_BANK_NAME.toLowerCase()

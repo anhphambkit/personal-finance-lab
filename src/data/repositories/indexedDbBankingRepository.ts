@@ -7,7 +7,7 @@ import {
 import { createSeedState, createNewDemoRecipientAccount } from '../seed/createSeedState'
 import { persistedBankingStateSchema, type PersistedBankingState } from './bankingStateSchema'
 
-export const BANKING_DATABASE_NAME = 'raksul-bank'
+export const BANKING_DATABASE_NAME = 'personal-bank'
 export const BANKING_DATABASE_VERSION = 1
 export const BANKING_OBJECT_STORE = 'banking-state'
 export const BANKING_STATE_KEY = 'current'
