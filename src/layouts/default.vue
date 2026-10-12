@@ -34,7 +34,7 @@ const navigation = [
   { label: 'Overview', icon: 'i-lucide-layout-dashboard', to: '/', exact: true },
   { label: 'Accounts', icon: 'i-lucide-wallet', to: '/accounts' },
   { label: 'Transactions', icon: 'i-lucide-list-filter', to: '/transactions' },
-  { label: 'Spending insights', icon: 'i-lucide-chart-no-axes-combined', to: '/spending-insights' },
+  // { label: 'Spending insights', icon: 'i-lucide-chart-no-axes-combined', to: '/spending-insights' },
   { label: 'Transfer', icon: 'i-lucide-arrow-right-left', to: '/transfer' },
 ].map((item) => ({
   ...item,
