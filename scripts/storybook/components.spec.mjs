@@ -84,7 +84,7 @@ test('legacy Uncertain Outcome link redirects and pending Control updates the re
 
 test('spending dashboard keeps large exact amounts and charts within mobile width', async ({
   page,
-}) => {
+}, testInfo) => {
   await page.setViewportSize({ width: 390, height: 1000 })
   await page.goto(
     '/iframe.html?id=banking-spendingdashboard--large-amounts&viewMode=story&globals=theme:dark',
@@ -100,5 +100,8 @@ test('spending dashboard keeps large exact amounts and charts within mobile widt
   await expect(
     page.getByRole('list', { name: 'Monthly spending amounts' }).getByRole('listitem'),
   ).toHaveCount(6)
-  await page.screenshot({ path: '/private/tmp/bank-insights-large-mobile.png', fullPage: true })
+  await page.screenshot({
+    path: testInfo.outputPath('bank-insights-large-mobile.png'),
+    fullPage: true,
+  })
 })
