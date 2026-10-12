@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from '#app'
 import type { LocationQueryRaw } from 'vue-router'
-import { transactionQuerySchema } from '@/data/api/transactionQuerySchema'
+import { DEFAULT_PAGE_SIZE, transactionQuerySchema } from '@/data/api/transactionQuerySchema'
 import { transactionFilterKeys, type TransactionFiltersValue } from '../transactionFilters'
 
 export function useTransactionRoute() {
@@ -29,21 +29,17 @@ export function useTransactionRoute() {
   function navigate(values: LocationQueryRaw) {
     return router.push({ query: { ...route.query, ...values } })
   }
-  function applyFilters(values: TransactionFiltersValue) {
+  /** The default page size stays out of the URL. */
+  const pageSizeParam = (pageSize?: number) =>
+    pageSize === undefined || pageSize === DEFAULT_PAGE_SIZE ? undefined : String(pageSize)
+  // Changing filters returns to page 1 and also repairs a malformed pagination URL.
+  function applyFilters(values?: TransactionFiltersValue) {
     return navigate({
       ...Object.fromEntries(
-        transactionFilterKeys.map((key) => [key, values[key].trim() || undefined]),
+        transactionFilterKeys.map((key) => [key, values?.[key].trim() || undefined]),
       ),
       page: undefined,
-      // Applying valid filters also repairs a malformed pagination URL.
-      pageSize: query.value?.pageSize === 20 ? undefined : query.value?.pageSize,
-    })
-  }
-  function clearFilters() {
-    return navigate({
-      ...Object.fromEntries(transactionFilterKeys.map((key) => [key, undefined])),
-      page: undefined,
-      pageSize: query.value?.pageSize === 20 ? undefined : query.value?.pageSize,
+      pageSize: pageSizeParam(query.value?.pageSize),
     })
   }
   return {
@@ -52,9 +48,9 @@ export function useTransactionRoute() {
     hasFilters,
     invalid: computed(() => !parsed.value.success),
     applyFilters,
-    clearFilters,
+    clearFilters: () => applyFilters(),
     setPage: (page: number) => navigate({ page: page === 1 ? undefined : String(page) }),
     setPageSize: (pageSize: number) =>
-      navigate({ pageSize: pageSize === 20 ? undefined : String(pageSize), page: undefined }),
+      navigate({ pageSize: pageSizeParam(pageSize), page: undefined }),
   }
 }

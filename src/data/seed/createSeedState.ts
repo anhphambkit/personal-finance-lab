@@ -1,3 +1,4 @@
+import { HOME_BANK_NAME } from '../../domain/accounts/accountIdentity'
 import { DEMO_NEW_SAME_BANK_NUMBER } from '../../shared/config/demoRecipients'
 import type { BankingState } from '../../use-cases/ports/BankingRepository'
 import type { Account } from '../../domain/accounts/account'
@@ -78,7 +79,7 @@ export function createSeedState(): BankingState {
         id: 'beneficiary-alex',
         customerId: customer.id,
         displayName: 'Alex Rivera',
-        bankName: 'Raksul-bank',
+        bankName: HOME_BANK_NAME,
         accountNumber: '200000001842',
         currency: 'USD',
         internalAccountId: 'account-internal-alex',
@@ -87,7 +88,7 @@ export function createSeedState(): BankingState {
         id: 'beneficiary-jamie',
         customerId: customer.id,
         displayName: 'Jamie Park',
-        bankName: 'Raksul-bank',
+        bankName: HOME_BANK_NAME,
         accountNumber: '200000006027',
         currency: 'USD',
         internalAccountId: 'account-internal-jamie',

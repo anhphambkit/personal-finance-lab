@@ -1,3 +1,4 @@
+import { HOME_BANK_NAME, isAccountNumber } from '@/domain/accounts/accountIdentity'
 import { z } from 'zod'
 import type { Account } from '@/domain/accounts/account'
 import type { Beneficiary } from '@/domain/beneficiaries/beneficiary'
@@ -65,7 +66,7 @@ export function transferDetailsSchema(accounts: Account[], beneficiaries: Benefi
         )
           issue('savedBeneficiaryId', 'Choose an available saved recipient.')
       } else {
-        const accountIdIsValid = /^\d{8,20}$/.test(details.recipientAccountId.trim())
+        const accountIdIsValid = isAccountNumber(details.recipientAccountId.trim())
         if (!accountIdIsValid)
           issue('recipientAccountId', 'Enter an account number with 8–20 digits.')
         if (details.recipientNetwork === 'OTHER_BANK') {
@@ -126,7 +127,7 @@ export function prepareTransfer(
       valid.recipientType === 'OWN_ACCOUNT'
         ? {
             name: target!.displayName,
-            bankName: 'Raksul-bank',
+            bankName: HOME_BANK_NAME,
             accountNumber: target!.accountNumber,
           }
         : beneficiary
@@ -138,7 +139,7 @@ export function prepareTransfer(
           : {
               name: valid.recipientName.trim(),
               bankName:
-                valid.recipientNetwork === 'SAME_BANK' ? 'Raksul-bank' : valid.bankName.trim(),
+                valid.recipientNetwork === 'SAME_BANK' ? HOME_BANK_NAME : valid.bankName.trim(),
               accountNumber: valid.recipientAccountId.trim(),
             },
     request: {
@@ -155,7 +156,7 @@ export function prepareTransfer(
                 beneficiary: {
                   displayName: valid.recipientName.trim(),
                   bankName:
-                    valid.recipientNetwork === 'SAME_BANK' ? 'Raksul-bank' : valid.bankName.trim(),
+                    valid.recipientNetwork === 'SAME_BANK' ? HOME_BANK_NAME : valid.bankName.trim(),
                   accountNumber: valid.recipientAccountId.trim(),
                   currency: 'USD',
                 },

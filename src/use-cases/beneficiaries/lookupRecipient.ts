@@ -1,3 +1,4 @@
+import { HOME_BANK_NAME, isAccountNumber } from '../../domain/accounts/accountIdentity'
 import type { CreateBeneficiaryRequest } from '../../contracts/beneficiaries'
 import { DomainError } from '../../domain/errors'
 import type { BankingRepository } from '../ports/BankingRepository'
@@ -10,7 +11,7 @@ export async function lookupRecipient(
   const state = await repository.load()
   const account = state.accounts.find((item) => item.accountNumber === accountNumber)
   if (
-    !/^\d{8,20}$/.test(accountNumber) ||
+    !isAccountNumber(accountNumber) ||
     !account ||
     account.ownerId === state.customer.id ||
     account.status !== 'ACTIVE'
@@ -18,7 +19,7 @@ export async function lookupRecipient(
     throw new DomainError('INVALID_RECIPIENT', 'This Raksul-bank recipient account is unavailable.')
   return {
     displayName: account.displayName,
-    bankName: 'Raksul-bank',
+    bankName: HOME_BANK_NAME,
     accountNumber: account.accountNumber,
     currency: account.currency,
   }

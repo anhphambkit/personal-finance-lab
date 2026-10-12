@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { computed, onServerPrefetch, useId, type VNodeChild } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { computed, useId, type VNodeChild } from 'vue'
 import UButton from '@nuxt/ui/components/Button.vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { Transaction } from '@/domain/transactions/transaction'
 import type { Account } from '@/domain/accounts/account'
-import { useBankingContext } from '@/data/api/bankingContext'
-import { bankingQueryKeys } from '@/data/api/bankingQueryKeys'
+import { useTransactions } from '@/features/transactions/composables/useTransactions'
 import DataState from '@/shared/components/DataState.vue'
 import BankingSkeleton from '@/shared/components/BankingSkeleton.vue'
 import TransactionTable from '@/features/transactions/components/TransactionTable.vue'
@@ -49,15 +47,7 @@ const limit = computed(() =>
   Number.isFinite(props.limit) ? Math.min(100, Math.max(1, Math.floor(props.limit))) : 5,
 )
 const query = computed(() => ({ page: 1, pageSize: limit.value }))
-const { api, ready } = useBankingContext()
-const { data, isPending, isFetching, isError, error, refetch, suspense } = useQuery({
-  enabled: ready,
-  queryKey: computed(() => bankingQueryKeys.transactions(query.value)),
-  queryFn: ({ signal }) => api.transactions(query.value, signal),
-})
-onServerPrefetch(async () => {
-  if (ready.value) await suspense().catch(() => {})
-})
+const { data, isPending, isFetching, isError, error, refetch } = useTransactions(query)
 </script>
 <template>
   <section :aria-labelledby="headingId" class="mt-4">

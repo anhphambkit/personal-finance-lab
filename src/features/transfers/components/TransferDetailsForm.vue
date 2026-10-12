@@ -18,6 +18,8 @@ import UIcon from '@nuxt/ui/components/Icon.vue'
 import type { Account } from '@/domain/accounts/account'
 import type { Beneficiary } from '@/domain/beneficiaries/beneficiary'
 import { maskAccountNumber } from '@/domain/accounts/maskAccountNumber'
+import { accountLabel } from '@/shared/utils/accountLabel'
+import { HOME_BANK_NAME, isAccountNumber } from '@/domain/accounts/accountIdentity'
 import MoneyInput from '@/shared/components/MoneyInput.vue'
 import { strictNumericInput } from '@/shared/strictNumericInput'
 import MoneyDisplay from '@/shared/components/MoneyDisplay.vue'
@@ -110,8 +112,9 @@ const matchingContact = computed(() =>
       item.accountNumber === state.recipientAccountId.trim() &&
       item.bankName.toLowerCase() ===
         (state.recipientNetwork === 'SAME_BANK'
-          ? 'raksul-bank'
-          : state.bankName.trim().toLowerCase()),
+          ? HOME_BANK_NAME
+          : state.bankName.trim()
+        ).toLowerCase(),
   ),
 )
 function selectSaved(value: string | undefined) {
@@ -153,20 +156,20 @@ if (
   checkedRecipient.value = {
     displayName: state.recipientName,
     accountNumber: state.verifiedAccountNumber,
-    bankName: 'Raksul-bank',
+    bankName: HOME_BANK_NAME,
     currency: 'USD',
   }
 }
 
 watch(state, () => emit('change', { ...state }), { flush: 'sync' })
 const schema = computed(() => transferDetailsSchema(props.accounts, props.beneficiaries))
-const accountIdReady = computed(() => /^\d{8,20}$/.test(state.recipientAccountId.trim()))
+const accountIdReady = computed(() => isAccountNumber(state.recipientAccountId.trim()))
 const source = computed(() =>
   props.accounts.find((account) => account.id === state.sourceAccountId),
 )
 const sources = computed(() =>
   props.accounts.map((account) => ({
-    label: `${account.displayName} · ${maskAccountNumber(account.accountNumber)}${account.status === 'FROZEN' ? ' · Frozen' : ''}`,
+    label: accountLabel(account),
     value: account.id,
     disabled: account.status !== 'ACTIVE',
   })),
@@ -185,14 +188,18 @@ const ownDestinations = computed(() =>
     })),
 )
 
+/** Forget a checked same-bank recipient once anything it depended on changes. */
+function clearVerification({ name = false } = {}) {
+  state.verifiedAccountNumber = ''
+  state.destinationId = ''
+  if (name) state.recipientName = ''
+  checkedRecipient.value = undefined
+  recipientError.value = ''
+}
+
 watch(
   () => [state.sourceAccountId, state.recipientType],
-  () => {
-    state.verifiedAccountNumber = ''
-    state.destinationId = ''
-    checkedRecipient.value = undefined
-    recipientError.value = ''
-  },
+  () => clearVerification(),
 )
 watch(
   () => state.recipientType,
@@ -205,38 +212,25 @@ watch(
   () => {
     state.savedBeneficiaryId = ''
     form.value?.clear()
-    state.verifiedAccountNumber = ''
-    state.destinationId = ''
+    clearVerification({ name: true })
     state.recipientAccountId = ''
-    state.recipientName = ''
     state.bankName = ''
-    checkedRecipient.value = undefined
-    recipientError.value = ''
     fillDemoRecipient()
   },
 )
 watch(
   () => state.recipientAccountId,
   () => {
-    if (state.recipientNetwork !== 'SAME_BANK') return
-    state.verifiedAccountNumber = ''
-    state.destinationId = ''
-    state.recipientName = ''
-    checkedRecipient.value = undefined
-    recipientError.value = ''
+    if (state.recipientNetwork === 'SAME_BANK') clearVerification({ name: true })
   },
 )
 
 async function checkAccount() {
   if (checking.value) return
   const number = state.recipientAccountId.trim()
-  checkedRecipient.value = undefined
-  state.destinationId = ''
-  state.verifiedAccountNumber = ''
-  state.recipientName = ''
-  recipientError.value = ''
+  clearVerification({ name: true })
   form.value?.clear(/recipientAccountId|destinationId/)
-  if (!/^\d{8,20}$/.test(number)) {
+  if (!isAccountNumber(number)) {
     recipientError.value = 'Enter an account number with 8–20 digits.'
     return
   }

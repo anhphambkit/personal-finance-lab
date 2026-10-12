@@ -1,3 +1,4 @@
+import { isAccountNumber, isHomeBank } from '../../domain/accounts/accountIdentity'
 import type { CreateBeneficiaryRequest } from '../../contracts/beneficiaries'
 import type { Beneficiary } from '../../domain/beneficiaries/beneficiary'
 import { DomainError } from '../../domain/errors'
@@ -24,11 +25,11 @@ export function resolveBeneficiary(
     request.displayName.length > 80 ||
     !request.bankName ||
     request.bankName.length > 80 ||
-    !/^\d{8,20}$/.test(request.accountNumber) ||
+    !isAccountNumber(request.accountNumber) ||
     request.currency !== 'USD'
   )
     throw new DomainError('INVALID_RECIPIENT', 'Check the recipient name, bank and account number.')
-  const sameBank = request.bankName.toLowerCase() === 'raksul-bank'
+  const sameBank = isHomeBank(request.bankName)
   const target = sameBank
     ? state.accounts.find((account) => account.accountNumber === request.accountNumber)
     : undefined

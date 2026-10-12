@@ -1,44 +1,29 @@
 import { BANKING_CHANGE_KEY, BANKING_RESET_EVENT } from '@/data/sync/bankingChanges'
-import { bankingQueryKeys } from '@/data/api/bankingQueryKeys'
-import { defineNuxtPlugin, useState } from '#app'
-import {
-  dehydrate,
-  hydrate,
-  QueryClient,
-  VueQueryPlugin,
-  type DehydratedState,
-} from '@tanstack/vue-query'
+import { refetchBankingData } from '@/data/api/bankingQueryKeys'
+import { defineNuxtPlugin } from '#app'
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const state = useState<DehydratedState | null>('banking-query', () => null)
-  // Never share server state between SSR requests/users.
+  // Demo data lives in the browser, so queries only run on the client (see `ready`).
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { staleTime: 30_000, retryOnMount: false, retry: import.meta.server ? false : 1 },
+      queries: { staleTime: 30_000, retryOnMount: false, retry: 1 },
       mutations: { retry: false },
     },
   })
   nuxtApp.vueApp.use(VueQueryPlugin, { queryClient })
-  if (import.meta.server) {
-    nuxtApp.hook('app:rendered', () => {
-      state.value = dehydrate(queryClient, {
-        shouldDehydrateQuery: (query) => query.state.status !== 'pending',
-      })
-      queryClient.clear()
-    })
-  } else {
-    if (state.value) hydrate(queryClient, state.value)
-    const changed = async (event: StorageEvent) => {
-      if (event.key !== BANKING_CHANGE_KEY || !event.newValue) return
-      try {
-        if (JSON.parse(event.newValue).reset) window.dispatchEvent(new Event(BANKING_RESET_EVENT))
-      } catch {
-        return
-      }
-      await queryClient.cancelQueries({ queryKey: bankingQueryKeys.all })
-      await queryClient.invalidateQueries({ queryKey: bankingQueryKeys.all })
+  if (import.meta.server) return
+
+  // Another tab committed a change: refetch everything.
+  const changed = async (event: StorageEvent) => {
+    if (event.key !== BANKING_CHANGE_KEY || !event.newValue) return
+    try {
+      if (JSON.parse(event.newValue).reset) window.dispatchEvent(new Event(BANKING_RESET_EVENT))
+    } catch {
+      return
     }
-    window.addEventListener('storage', changed)
-    nuxtApp.vueApp.onUnmount(() => window.removeEventListener('storage', changed))
+    await refetchBankingData(queryClient)
   }
+  window.addEventListener('storage', changed)
+  nuxtApp.vueApp.onUnmount(() => window.removeEventListener('storage', changed))
 })

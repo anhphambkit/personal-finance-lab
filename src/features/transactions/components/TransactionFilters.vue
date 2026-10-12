@@ -4,9 +4,9 @@ import UButton from '@nuxt/ui/components/Button.vue'
 import UInput from '@nuxt/ui/components/Input.vue'
 import USelect from '@nuxt/ui/components/Select.vue'
 import type { Account } from '@/domain/accounts/account'
-import { maskAccountNumber } from '@/domain/accounts/maskAccountNumber'
+import { accountLabel } from '@/shared/utils/accountLabel'
 import { transactionQuerySchema } from '@/data/api/transactionQuerySchema'
-import type { TransactionFiltersValue } from '../transactionFilters'
+import { transactionFilterKeys, type TransactionFiltersValue } from '../transactionFilters'
 
 const props = withDefaults(
   defineProps<{
@@ -57,7 +57,7 @@ watch(
 const accountItems = computed(() => [
   { label: 'All accounts', value: 'ALL' },
   ...props.accounts.map((account) => ({
-    label: `${account.displayName} · ${maskAccountNumber(account.accountNumber)}${account.status === 'FROZEN' ? ' · Frozen' : ''}`,
+    label: accountLabel(account),
     value: account.id,
   })),
 ])
@@ -98,45 +98,28 @@ const selectFilters: {
     ],
   },
 ]
+function filtersMessage() {
+  return draft.value.dateFrom && draft.value.dateTo && draft.value.dateFrom > draft.value.dateTo
+    ? 'Start date must be on or before end date.'
+    : 'Check your filters. Use valid dates and a search of at most 200 characters.'
+}
 function apply() {
   if (props.busy) return
   if (!filtersValid.value) {
-    validateOnBlur()
-    return
-  }
-  const values = Object.fromEntries(Object.entries(draft.value).filter(([, value]) => value.trim()))
-  const parsed = transactionQuerySchema.safeParse(values)
-  if (!parsed.success) {
-    error.value =
-      draft.value.dateFrom && draft.value.dateTo && draft.value.dateFrom > draft.value.dateTo
-        ? 'Start date must be on or before end date.'
-        : 'Check your filters. Use valid dates and a search of at most 200 characters.'
+    error.value = filtersMessage()
     return
   }
   error.value = ''
   emit('apply', { ...draft.value })
 }
 function validateOnBlur() {
-  if (filtersValid.value) {
-    error.value = ''
-    return
-  }
-  error.value =
-    draft.value.dateFrom && draft.value.dateTo && draft.value.dateFrom > draft.value.dateTo
-      ? 'Start date must be on or before end date.'
-      : 'Check your filters. Use valid dates and a search of at most 200 characters.'
+  error.value = filtersValid.value ? '' : filtersMessage()
 }
 function clear() {
   // Clear local edits even when the URL already contains no filters.
-  draft.value = {
-    query: '',
-    accountId: '',
-    direction: '',
-    type: '',
-    status: '',
-    dateFrom: '',
-    dateTo: '',
-  }
+  draft.value = Object.fromEntries(
+    transactionFilterKeys.map((key) => [key, '']),
+  ) as TransactionFiltersValue
   error.value = ''
   emit('clear')
 }

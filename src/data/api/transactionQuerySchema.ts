@@ -8,6 +8,8 @@ const positiveInteger = (maximum: number) =>
     .transform(Number)
     .pipe(z.number().int().max(maximum))
 
+export const DEFAULT_PAGE_SIZE = 20
+
 export const transactionQuerySchema = z
   .strictObject({
     accountId: z.string().trim().min(1).max(100).optional(),
@@ -18,7 +20,7 @@ export const transactionQuerySchema = z
     dateFrom: z.iso.date().optional(),
     dateTo: z.iso.date().optional(),
     page: positiveInteger(1_000_000).default(1),
-    pageSize: positiveInteger(100).default(20),
+    pageSize: positiveInteger(100).default(DEFAULT_PAGE_SIZE),
   })
   .refine((query) => !query.dateFrom || !query.dateTo || query.dateFrom <= query.dateTo, {
     message: 'Date range is reversed.',
