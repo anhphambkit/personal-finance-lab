@@ -11,6 +11,7 @@ import type { Transaction } from '@/domain/transactions/transaction'
 import type { Account } from '@/domain/accounts/account'
 import type { TransactionItemScope, TransactionSlots } from './transactionSlots'
 import MoneyDisplay from '@/shared/components/MoneyDisplay.vue'
+import { transactionDirectionLabels, transactionTypeLabels } from '../transactionLabels'
 const props = withDefaults(
   defineProps<{
     transactions: Transaction[]
@@ -55,6 +56,11 @@ const dateFormat = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
   timeZone: 'UTC',
 })
+const formatDate = (transaction: Transaction) => dateFormat.format(new Date(transaction.occurredAt))
+const accountName = (transaction: Transaction) =>
+  accountMap.value.get(transaction.accountId)?.displayName ?? 'Account'
+const amountClass = (transaction: Transaction) =>
+  transaction.direction === 'CREDIT' ? 'text-green-700' : 'text-highlighted'
 const defaultColumns: TableColumn<Transaction>[] = [
   { accessorKey: 'description', header: 'Transaction' },
   { accessorKey: 'occurredAt', header: 'Date · UTC' },
@@ -83,7 +89,6 @@ const caption = computed(
     props.caption ??
     (props.variant === 'recent' ? 'Recent transactions' : 'Account transactions, newest first'),
 )
-const types = { TRANSFER: 'Transfer', CARD: 'Card', CASH: 'Cash', FEE: 'Fee', INTEREST: 'Interest' }
 const theme = tv({
   slots: {
     root: '',
@@ -155,7 +160,7 @@ const styles = computed(() => theme({ variant: props.variant }))
               </template>
               <p v-else class="mt-1 text-xs text-muted">
                 <slot name="account" v-bind="scope(row.original, 'table')">
-                  {{ accountMap.get(row.original.accountId)?.displayName ?? 'Account' }}
+                  {{ accountName(row.original) }}
                 </slot>
               </p>
             </div>
@@ -165,20 +170,20 @@ const styles = computed(() => theme({ variant: props.variant }))
       <template #occurredAt-cell="{ row }">
         <slot name="date" v-bind="scope(row.original, 'table')">
           <time :datetime="row.original.occurredAt" class="text-muted">
-            {{ dateFormat.format(new Date(row.original.occurredAt)) }}
+            {{ formatDate(row.original) }}
           </time>
         </slot>
       </template>
       <template #accountId-cell="{ row }">
         <slot name="account" v-bind="scope(row.original, 'table')">
           <span class="whitespace-normal">
-            {{ accountMap.get(row.original.accountId)?.displayName ?? 'Account' }}
+            {{ accountName(row.original) }}
           </span>
         </slot>
       </template>
       <template #type-cell="{ row }">
         <slot name="type" v-bind="scope(row.original, 'table')">
-          {{ types[row.original.type] }}
+          {{ transactionTypeLabels[row.original.type] }}
         </slot>
       </template>
       <template #status-cell="{ row }">
@@ -192,10 +197,10 @@ const styles = computed(() => theme({ variant: props.variant }))
             :amount-minor="row.original.amountMinor"
             :direction="row.original.direction"
             class="font-semibold"
-            :class="row.original.direction === 'CREDIT' ? 'text-green-700' : 'text-highlighted'"
+            :class="amountClass(row.original)"
           />
           <p v-if="variant === 'full'" class="mt-1 text-xs text-muted">
-            {{ row.original.direction === 'CREDIT' ? 'Money in' : 'Money out' }}
+            {{ transactionDirectionLabels[row.original.direction] }}
           </p>
         </slot>
       </template>
@@ -229,30 +234,32 @@ const styles = computed(() => theme({ variant: props.variant }))
                   :amount-minor="entry.amountMinor"
                   :direction="entry.direction"
                   class="font-semibold"
-                  :class="entry.direction === 'CREDIT' ? 'text-green-700' : 'text-highlighted'"
+                  :class="amountClass(entry)"
                 />
                 <p v-if="variant === 'full'" class="mt-1 text-xs text-muted">
-                  {{ entry.direction === 'CREDIT' ? 'Money in' : 'Money out' }} · USD
+                  {{ transactionDirectionLabels[entry.direction] }} · USD
                 </p>
               </slot>
             </div>
           </div>
           <div class="text-sm text-muted">
             <slot name="account" v-bind="scope(entry, 'mobile')">
-              {{ accountMap.get(entry.accountId)?.displayName ?? 'Account' }}
+              {{ accountName(entry) }}
             </slot>
           </div>
           <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
             <span>
               <slot name="date" v-bind="scope(entry, 'mobile')">
                 <time :datetime="entry.occurredAt">
-                  {{ dateFormat.format(new Date(entry.occurredAt)) }}
+                  {{ formatDate(entry) }}
                 </time>
                 · UTC
               </slot>
               <template v-if="variant === 'full'">
                 ·
-                <slot name="type" v-bind="scope(entry, 'mobile')">{{ types[entry.type] }}</slot>
+                <slot name="type" v-bind="scope(entry, 'mobile')">
+                  {{ transactionTypeLabels[entry.type] }}
+                </slot>
               </template>
             </span>
             <slot name="status" v-bind="scope(entry, 'mobile')">

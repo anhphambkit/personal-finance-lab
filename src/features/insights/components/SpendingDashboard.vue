@@ -57,12 +57,14 @@ function percentage(amount: string, denominator: bigint): number {
   const scaled = (BigInt(amount) * 10_000n) / denominator
   return Number(scaled > 10_000n ? 10_000n : scaled < 0n ? 0n : scaled) / 100
 }
+const longMonth = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+})
+const shortMonth = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' })
 function monthLabel(month: string, short = false): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: short ? 'short' : 'long',
-    ...(short ? {} : { year: 'numeric' as const }),
-    timeZone: 'UTC',
-  }).format(new Date(`${month}-01T00:00:00.000Z`))
+  return (short ? shortMonth : longMonth).format(new Date(`${month}-01T00:00:00.000Z`))
 }
 </script>
 

@@ -7,6 +7,11 @@ import type { Account } from '@/domain/accounts/account'
 import { accountLabel } from '@/shared/utils/accountLabel'
 import { transactionQuerySchema } from '@/data/api/transactionQuerySchema'
 import { transactionFilterKeys, type TransactionFiltersValue } from '../transactionFilters'
+import {
+  transactionDirectionLabels,
+  transactionStatusLabels,
+  transactionTypeLabels,
+} from '../transactionLabels'
 
 const props = withDefaults(
   defineProps<{
@@ -61,6 +66,12 @@ const accountItems = computed(() => [
     value: account.id,
   })),
 ])
+function options(allLabel: string, labels: Record<string, string>) {
+  return [
+    { label: allLabel, value: 'ALL' },
+    ...Object.entries(labels).map(([value, label]) => ({ label, value })),
+  ]
+}
 const selectFilters: {
   key: 'direction' | 'type' | 'status'
   label: string
@@ -69,33 +80,17 @@ const selectFilters: {
   {
     key: 'direction',
     label: 'Direction',
-    items: [
-      { label: 'All directions', value: 'ALL' },
-      { label: 'Money out', value: 'DEBIT' },
-      { label: 'Money in', value: 'CREDIT' },
-    ],
+    items: options('All directions', transactionDirectionLabels),
   },
   {
     key: 'type',
     label: 'Type',
-    items: [
-      { label: 'All types', value: 'ALL' },
-      { label: 'Transfer', value: 'TRANSFER' },
-      { label: 'Card', value: 'CARD' },
-      { label: 'Cash', value: 'CASH' },
-      { label: 'Fee', value: 'FEE' },
-      { label: 'Interest', value: 'INTEREST' },
-    ],
+    items: options('All types', transactionTypeLabels),
   },
   {
     key: 'status',
     label: 'Status',
-    items: [
-      { label: 'All statuses', value: 'ALL' },
-      { label: 'Completed', value: 'COMPLETED' },
-      { label: 'Pending', value: 'PENDING' },
-      { label: 'Failed', value: 'FAILED' },
-    ],
+    items: options('All statuses', transactionStatusLabels),
   },
 ]
 function filtersMessage() {

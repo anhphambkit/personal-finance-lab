@@ -4,6 +4,7 @@ import type { Account } from '@/domain/accounts/account'
 import MoneyDisplay from '@/shared/components/MoneyDisplay.vue'
 import MaskedAccountNumber from '@/shared/components/MaskedAccountNumber.vue'
 import TransactionStatusBadge from './TransactionStatusBadge.vue'
+import { transactionDirectionLabels, transactionTypeLabels } from '../transactionLabels'
 
 defineProps<{ transaction: Transaction; account?: Account }>()
 const timestamp = new Intl.DateTimeFormat('en-US', {
@@ -11,14 +12,13 @@ const timestamp = new Intl.DateTimeFormat('en-US', {
   timeStyle: 'medium',
   timeZone: 'UTC',
 })
-const types = { TRANSFER: 'Transfer', CARD: 'Card', CASH: 'Cash', FEE: 'Fee', INTEREST: 'Interest' }
 </script>
 
 <template>
   <div class="min-w-0 space-y-6">
     <div class="rounded-2xl bg-primary/5 p-5">
       <p class="text-sm text-muted">
-        {{ transaction.direction === 'CREDIT' ? 'Money in' : 'Money out' }}
+        {{ transactionDirectionLabels[transaction.direction] }}
       </p>
       <MoneyDisplay
         :amount-minor="transaction.amountMinor"
@@ -55,7 +55,7 @@ const types = { TRANSFER: 'Transfer', CARD: 'Card', CASH: 'Cash', FEE: 'Fee', IN
       </div>
       <div>
         <dt class="text-muted">Type</dt>
-        <dd class="text-highlighted">{{ types[transaction.type] }}</dd>
+        <dd class="text-highlighted">{{ transactionTypeLabels[transaction.type] }}</dd>
       </div>
       <div>
         <dt class="text-muted">Counterparty</dt>

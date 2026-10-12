@@ -24,6 +24,7 @@ import MoneyInput from '@/shared/components/MoneyInput.vue'
 import { strictNumericInput } from '@/shared/strictNumericInput'
 import MoneyDisplay from '@/shared/components/MoneyDisplay.vue'
 import {
+  inNetwork,
   prepareTransfer,
   transferDetailsSchema,
   type TransferDetails,
@@ -42,28 +43,27 @@ const recipientError = ref('')
 const { api } = useBankingContext()
 const checking = ref(false)
 const checkedRecipient = ref<CreateBeneficiaryRequest>()
-const bankOptions = [
-  { label: 'Vietcombank', value: 'Vietcombank' },
-  { label: 'Agribank', value: 'Agribank' },
-  { label: 'BIDV', value: 'BIDV' },
-  { label: 'VietinBank', value: 'VietinBank' },
-  { label: 'Techcombank', value: 'Techcombank' },
-  { label: 'MB Bank', value: 'MB Bank' },
-  { label: 'ACB', value: 'ACB' },
-  { label: 'Sacombank', value: 'Sacombank' },
-  { label: 'VPBank', value: 'VPBank' },
-  { label: 'TPBank', value: 'TPBank' },
+const knownBanks = [
+  'Vietcombank',
+  'Agribank',
+  'BIDV',
+  'VietinBank',
+  'Techcombank',
+  'MB Bank',
+  'ACB',
+  'Sacombank',
+  'VPBank',
+  'TPBank',
 ]
-const banks = computed(() => [
-  ...bankOptions,
-  ...[
-    ...new Set(
-      props.beneficiaries.filter((item) => !item.internalAccountId).map((item) => item.bankName),
-    ),
-  ]
-    .filter((name) => !bankOptions.some((bank) => bank.value === name))
-    .map((name) => ({ label: name, value: name })),
-])
+// Keep banks from saved other-bank recipients selectable even when they are not in the list.
+const banks = computed(() =>
+  [
+    ...new Set([
+      ...knownBanks,
+      ...props.beneficiaries.filter((item) => !item.internalAccountId).map((item) => item.bankName),
+    ]),
+  ].map((name) => ({ label: name, value: name })),
+)
 const state = reactive<TransferDetails>(
   props.initial
     ? { ...props.initial }
@@ -87,9 +87,7 @@ const accountNumberInput = strictNumericInput(/^\d*$/, () => state.recipientAcco
 if (
   state.savedBeneficiaryId &&
   !props.beneficiaries.some(
-    (item) =>
-      item.id === state.savedBeneficiaryId &&
-      Boolean(item.internalAccountId) === (state.recipientNetwork === 'SAME_BANK'),
+    (item) => item.id === state.savedBeneficiaryId && inNetwork(item, state.recipientNetwork),
   )
 )
   state.savedBeneficiaryId = ''
@@ -99,7 +97,7 @@ const savedRecipient = computed(() =>
 )
 const savedOptions = computed(() =>
   props.beneficiaries
-    .filter((item) => Boolean(item.internalAccountId) === (state.recipientNetwork === 'SAME_BANK'))
+    .filter((item) => inNetwork(item, state.recipientNetwork))
     .map((item) => ({
       value: item.id,
       label: item.displayName,
@@ -341,7 +339,7 @@ async function focusError(event: { errors: { id?: string }[] }) {
         <URadioGroup
           v-model="state.recipientNetwork"
           :items="[
-            { label: 'Same bank', description: 'Personal-bank account', value: 'SAME_BANK' },
+            { label: 'Same bank', description: `${HOME_BANK_NAME} account`, value: 'SAME_BANK' },
             { label: 'Other bank', description: 'Domestic bank account', value: 'OTHER_BANK' },
           ]"
           orientation="horizontal"
@@ -446,7 +444,7 @@ async function focusError(event: { errors: { id?: string }[] }) {
             <p class="truncate font-semibold text-highlighted">
               {{ checkedRecipient.displayName }}
             </p>
-            <p class="text-sm text-muted">Verified Personal-bank account</p>
+            <p class="text-sm text-muted">Verified {{ HOME_BANK_NAME }} account</p>
           </div>
         </div>
 

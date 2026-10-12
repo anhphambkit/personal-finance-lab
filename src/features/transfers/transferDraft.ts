@@ -25,6 +25,10 @@ export interface TransferDraft {
   source: Account
   recipient: { name: string; bankName: string; accountNumber: string }
 }
+/** Same-bank recipients are linked to an internal account; other-bank ones are not. */
+export function inNetwork(beneficiary: Beneficiary, network: TransferDetails['recipientNetwork']) {
+  return Boolean(beneficiary.internalAccountId) === (network === 'SAME_BANK')
+}
 export function transferDetailsSchema(accounts: Account[], beneficiaries: Beneficiary[]) {
   return z
     .object({
@@ -62,7 +66,7 @@ export function transferDetailsSchema(accounts: Account[], beneficiaries: Benefi
           !saved ||
           saved.currency !== source?.currency ||
           saved.customerId !== source?.ownerId ||
-          Boolean(saved.internalAccountId) !== (details.recipientNetwork === 'SAME_BANK')
+          !inNetwork(saved, details.recipientNetwork)
         )
           issue('savedBeneficiaryId', 'Choose an available saved recipient.')
       } else {
@@ -108,6 +112,11 @@ export function prepareTransfer(
   beneficiaries: Beneficiary[],
 ): TransferDraft {
   const valid = transferDetailsSchema(accounts, beneficiaries).parse(details)
+  const entered = {
+    displayName: valid.recipientName.trim(),
+    bankName: valid.recipientNetwork === 'SAME_BANK' ? HOME_BANK_NAME : valid.bankName.trim(),
+    accountNumber: valid.recipientAccountId.trim(),
+  }
   const source = accounts.find((account) => account.id === valid.sourceAccountId)!
   const target = accounts.find((account) => account.id === valid.destinationId)
   const beneficiary = valid.savedBeneficiaryId
@@ -117,8 +126,8 @@ export function prepareTransfer(
       : beneficiaries.find(
           (item) =>
             !item.internalAccountId &&
-            item.accountNumber === valid.recipientAccountId.trim() &&
-            item.bankName.toLowerCase() === valid.bankName.trim().toLowerCase(),
+            item.accountNumber === entered.accountNumber &&
+            item.bankName.toLowerCase() === entered.bankName.toLowerCase(),
         )
   return {
     details: { ...valid },
@@ -137,10 +146,9 @@ export function prepareTransfer(
               accountNumber: beneficiary.accountNumber,
             }
           : {
-              name: valid.recipientName.trim(),
-              bankName:
-                valid.recipientNetwork === 'SAME_BANK' ? HOME_BANK_NAME : valid.bankName.trim(),
-              accountNumber: valid.recipientAccountId.trim(),
+              name: entered.displayName,
+              bankName: entered.bankName,
+              accountNumber: entered.accountNumber,
             },
     request: {
       idempotencyKey: crypto.randomUUID(),
@@ -153,13 +161,7 @@ export function prepareTransfer(
             : {
                 kind: 'NEW_BENEFICIARY',
                 saveRecipient: valid.saveRecipient === true,
-                beneficiary: {
-                  displayName: valid.recipientName.trim(),
-                  bankName:
-                    valid.recipientNetwork === 'SAME_BANK' ? HOME_BANK_NAME : valid.bankName.trim(),
-                  accountNumber: valid.recipientAccountId.trim(),
-                  currency: 'USD',
-                },
+                beneficiary: { ...entered, currency: 'USD' },
               },
       amountMinor: decimalToMinor(valid.amount),
       currency: source.currency,

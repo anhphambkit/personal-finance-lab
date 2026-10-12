@@ -2,9 +2,10 @@ import { computed } from 'vue'
 import { useRoute, useRouter, useState } from '#app'
 import { z } from 'zod'
 import type { SpendingQuery } from '@/contracts/insights'
+import { SPENDING_MONTH_PATTERN } from '@/domain/spending/aggregateSpending'
 
 const schema = z.object({
-  month: z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/),
+  month: z.string().regex(SPENDING_MONTH_PATTERN),
   accountId: z.string().trim().min(1).max(100).optional(),
 })
 

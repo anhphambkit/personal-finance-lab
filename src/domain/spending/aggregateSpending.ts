@@ -2,8 +2,11 @@ import { assertAmountMinor } from '../money/money'
 import type { Transaction } from '../transactions/transaction'
 import type { SpendingInsight, SpendingType } from './spendingInsight'
 
+/** A calendar month between 2000-01 and 2099-12. */
+export const SPENDING_MONTH_PATTERN = /^20\d{2}-(0[1-9]|1[0-2])$/
+
 function selectedMonthStart(month: string): Date {
-  if (!/^20\d{2}-(0[1-9]|1[0-2])$/.test(month)) {
+  if (!SPENDING_MONTH_PATTERN.test(month)) {
     throw new RangeError('Select a valid month between 2000-01 and 2099-12.')
   }
   return new Date(`${month}-01T00:00:00.000Z`)

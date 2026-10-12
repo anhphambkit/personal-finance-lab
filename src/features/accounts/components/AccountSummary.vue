@@ -45,7 +45,8 @@ const scope = computed(() => ({
           class="mt-1 block text-2xl font-semibold tracking-tight text-highlighted"
         />
         <p class="mt-0.5 text-xs text-muted">
-          {{ accounts.length }} accounts · Includes frozen balances
+          {{ accounts.length }} {{ accounts.length === 1 ? 'account' : 'accounts' }} · Includes
+          frozen balances
         </p>
       </slot>
     </div>
