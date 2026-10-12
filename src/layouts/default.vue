@@ -98,7 +98,7 @@ watch(
       <template #header>
         <NuxtLink
           to="/"
-          aria-label="Raksul-bank overview"
+          aria-label="Personal-bank overview"
           class="bank-brand flex items-center gap-3"
           @click="closeIfCurrentPage('/')"
         >
@@ -106,9 +106,9 @@ watch(
             aria-hidden="true"
             class="flex size-9 shrink-0 items-center justify-center bank-brand-mark rounded-xl bg-primary text-2xl leading-none font-semibold text-white"
           >
-            r.
+            p.
           </span>
-          <span class="text-lg font-semibold tracking-tight text-highlighted">raksul-bank</span>
+          <span class="text-lg font-semibold tracking-tight text-highlighted">personal-bank</span>
         </NuxtLink>
       </template>
 
